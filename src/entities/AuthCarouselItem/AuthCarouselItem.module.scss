@@ -1,0 +1,19 @@
+@import "../../app/theme/theme.scss";
+.card {
+    min-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    &__image {
+max-width: 200px;
+height: auto;
+    }
+    &__title {
+@include fontSize(32px);
+    }
+    &__describtion {
+font-weight:400;
+@include fontSize(20px);
+text-align: center;
+    }
+}

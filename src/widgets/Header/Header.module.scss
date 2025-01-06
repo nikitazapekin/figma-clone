@@ -1,0 +1,40 @@
+@import "../../app/theme/theme.scss";
+
+.header {
+    width: 100%;
+    height: auto;
+    background-color: $black;
+    &__container {
+        width: 100%;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1440px;
+        margin: 0 auto;
+    }
+
+    &__logo {
+        &__image {
+
+            height: 40px;
+            width: auto;
+        cursor: pointer;
+     
+        }
+
+     
+    }
+    &__list {
+        display: flex;
+        column-gap: 20px;
+    }
+    &__link {
+color: $white;
+@include fontSize(32px);
+
+    }
+    &__link:nth-child(2) {
+        background-color: red;
+    }
+}

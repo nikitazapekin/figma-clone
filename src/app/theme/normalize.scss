@@ -1,0 +1,20 @@
+@import "../theme/theme.scss";
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  a {
+    text-decoration: none;
+  }
+  ul,
+  ol {
+    list-style: none;
+    text-decoration: none;
+  }
+
+  body {
+    background-color: $blue;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+   // background-color: @fontSize(16px);
+  }

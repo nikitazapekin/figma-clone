@@ -1,0 +1,13 @@
+ 
+.wrapper {
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+}
+
+.content {
+  flex: 1 1 auto;
+}
+ 
