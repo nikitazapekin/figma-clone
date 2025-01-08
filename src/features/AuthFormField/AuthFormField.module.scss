@@ -1,0 +1,22 @@
+@import "../../app/theme/theme.scss";
+.field {
+    width: 100%;
+    &__wrapper {
+        width: 100%;
+    }
+    &__input {
+        width: 100%;
+        cursor: none;
+        outline: none;
+        font-size: 16px;
+        padding: 10px;
+        padding-left: 0px;
+        border: none;
+border-bottom: 1px solid $gray;
+    }
+    &__title {
+        font-size: 20px;
+
+    }
+   
+}

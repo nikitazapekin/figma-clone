@@ -6,3 +6,10 @@
     border-radius: 50%;
     cursor: pointer;
 }
+
+.active {
+    width: 20px;
+    height: 20px;
+    background-color: $blue;
+  //  transition: 0.4s ease-in-out;
+}

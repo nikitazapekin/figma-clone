@@ -1,12 +1,19 @@
 import styles from "./Dot.module.scss"
 interface DotProps {
-    index:number
+    index:number,
+    handleDot: (index: number) => void
+    active: number
+
 }
-const Dot = ({index}: DotProps) => {
+const Dot = ({index, handleDot, active}: DotProps) => {
     return ( 
-        <div className={styles.dot} 
+        <div className={`${styles.dot} ${active == index ? styles.active : ""}`} 
         data-name={index}
-        />
+        onClick={()=>handleDot(index)}
+        
+        >
+        
+        </div>
 
         
      );
