@@ -12,5 +12,9 @@
     font-size: 20px;
 text-align: center;
 border-radius: 8px;
+transition: 0.4s ease-in-out;
+&:hover {
+    background-color: $purpleActive;
+}
 
 }

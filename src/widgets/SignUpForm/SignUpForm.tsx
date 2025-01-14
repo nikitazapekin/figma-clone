@@ -1,12 +1,12 @@
 import { SignInConsts } from "@/mocks/SignInForm";
-import styles from "./SignInForm.module.scss"
+import styles from "./SignUpForm.module.scss"
 import AuthFormField from "@/features/AuthFormField/AuthFormField";
 import AuthCarousel from "@/features/AuthCarousel/AuthCarousel";
 import Image from "next/image";
 import Google from "@/assets/google.png"
 import ActionButton from "@/shared/ActionButton/ActionButton";
 import Link from "next/link";
-const SignInForm = () => {
+const SignUpForm = () => {
     return (
         <form className={styles.form}>
             <div className={styles.form__container}>
@@ -28,7 +28,7 @@ const SignInForm = () => {
                         </div>
 
                         <ActionButton
-                            text={"Войти"}
+                            text={"Зарегистрироваться"}
                         />
                         <p className={styles.form__or}>
                             Или
@@ -41,8 +41,8 @@ const SignInForm = () => {
                             />
                         </div>
                         <p className={styles.form__or}>
-                            <Link href={`/SignUp`} className={styles.form__link}>
-                            Зарегистрироваться
+                            <Link href={`/SignIn`} className={styles.form__link}>
+                        Войти
                             </Link>
                         </p>
                     </div>
@@ -51,4 +51,4 @@ const SignInForm = () => {
         </form>);
 }
 
-export default SignInForm;
+export default SignUpForm;
