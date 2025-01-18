@@ -11,9 +11,22 @@ const Canvas = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        // Устанавливаем реальные размеры канваса
+        // Сохраняем текущий контекст
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        const oldWidth = canvas.width;
+        const oldHeight = canvas.height;
+
+        // Сохраняем рисунок
+        const imageData = ctx.getImageData(0, 0, oldWidth, oldHeight);
+
+        // Устанавливаем новые размеры
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
+
+        // Восстанавливаем рисунок
+        ctx.putImageData(imageData, 0, 0);
     };
 
     useEffect(() => {
@@ -65,14 +78,11 @@ const Canvas = () => {
     };
 
     return (
-        <div style={{ width: "100%", height: "100%",
-            backgroundColor: "red",
-            minHeight: "100%"
-         }}>
+        <div className={styles.wrapper}>
             <canvas
                 ref={canvasRef}
                 className={styles.canvas}
-                style={{ width: "100%", height: "100%", border: "1px solid blue" }}
+                style={{ border: "1px solid blue" }}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
