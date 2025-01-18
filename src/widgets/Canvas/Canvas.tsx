@@ -1,223 +1,85 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./Canvas.module.scss";
-import CanvasTools from "@/features/CanvasTools/CanvasTools";
 
 const Canvas = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const [isDrawing, setIsDrawing] = useState(false);
-    const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
+    const [startX, setStartX] = useState(0);
+    const [startY, setStartY] = useState(0);
+    const [isDown, setIsDown] = useState(false);
 
-    useEffect(() => {
+    const updateCanvasSize = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        const context = canvas.getContext("2d");
-        if (!context) return;
-
-        const handleMouseDown = (event: MouseEvent) => {
-            setIsDrawing(true);
-            setStartPos({ x: event.offsetX, y: event.offsetY });
-        };
-
-        const handleMouseMove = (event: MouseEvent) => {
-            if (!isDrawing || !startPos) return;
-
-       /*     const currentX = event.offsetX;
-            const currentY = event.offsetY;
-
-            const radiusX = Math.abs(currentX - startPos.x);
-            const radiusY = Math.abs(currentY - startPos.y);
-
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.beginPath();
-
-            if (event.shiftKey) {
-                // Если нажата клавиша Shift, рисуем идеальный круг
-                const radius = Math.max(radiusX, radiusY);
-                context.arc(startPos.x, startPos.y, radius, 0, Math.PI * 2);
-            } else {
-                // Если не нажата клавиша Shift, рисуем эллипс
-                context.ellipse(startPos.x, startPos.y, radiusX, radiusY, 0, 0, Math.PI * 2);
-            }
-
-            context.stroke(); */
-        };
-
-        const handleMouseUp = () => {
-            setIsDrawing(false);
-            setStartPos(null);
-        };
-
-        canvas.addEventListener("mousedown", handleMouseDown);
-        canvas.addEventListener("mousemove", handleMouseMove);
-        canvas.addEventListener("mouseup", handleMouseUp);
-        canvas.addEventListener("mouseleave", handleMouseUp);
-
-        return () => {
-            canvas.removeEventListener("mousedown", handleMouseDown);
-            canvas.removeEventListener("mousemove", handleMouseMove);
-            canvas.removeEventListener("mouseup", handleMouseUp);
-            canvas.removeEventListener("mouseleave", handleMouseUp);
-        };
-    }, [isDrawing, startPos]);
-
-    const handleDrop = (event: React.DragEvent<HTMLCanvasElement>) => {
-        event.preventDefault();
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const context = canvas.getContext("2d");
-        if (!context) return;
-
-        const file = event.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const img = new Image();
-                img.onload = () => {
-                    context.clearRect(0, 0, canvas.width, canvas.height);
-                    context.drawImage(img, 0, 0, canvas.width, canvas.height);
-                };
-                if (reader.result) {
-                    img.src = reader.result as string;
-                }
-            };
-            reader.readAsDataURL(file);
-        }
+        // Устанавливаем реальные размеры канваса
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
     };
 
-    const handleDragOver = (event: React.DragEvent<HTMLCanvasElement>) => {
-        event.preventDefault();
+    useEffect(() => {
+        updateCanvasSize();
+
+        // Обновляем размеры канваса при изменении окна
+        window.addEventListener("resize", updateCanvasSize);
+        return () => window.removeEventListener("resize", updateCanvasSize);
+    }, []);
+
+    const drawOval = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.beginPath();
+        ctx.moveTo(startX, startY + (y - startY) / 2);
+        ctx.bezierCurveTo(startX, startY, x, startY, x, startY + (y - startY) / 2);
+        ctx.bezierCurveTo(x, y, startX, y, startX, startY + (y - startY) / 2);
+        ctx.closePath();
+        ctx.stroke();
+    };
+
+    const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const rect = canvas.getBoundingClientRect();
+        setStartX(e.clientX - rect.left);
+        setStartY(e.clientY - rect.top);
+        setIsDown(true);
+    };
+
+    const handleMouseUp = () => {
+        setIsDown(false);
+    };
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        if (!isDown) return;
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        drawOval(ctx, mouseX, mouseY);
     };
 
     return (
-        <div>
+        <div style={{ width: "100%", height: "100%",
+            backgroundColor: "red",
+            minHeight: "100%"
+         }}>
             <canvas
                 ref={canvasRef}
                 className={styles.canvas}
-                width={800}
-                height={600}
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
+                style={{ width: "100%", height: "100%", border: "1px solid blue" }}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseOut={handleMouseUp}
             ></canvas>
-            <CanvasTools />
         </div>
     );
 };
 
 export default Canvas;
-
-/*
-import { useEffect, useRef, useState } from "react";
-import styles from "./Canvas.module.scss";
-import CanvasTools from "@/features/CanvasTools/CanvasTools";
-
-const Canvas = () => {
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const [isDrawing, setIsDrawing] = useState(false);
-    const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const context = canvas.getContext("2d");
-        if (!context) return;
-
-        const handleMouseDown = (event: MouseEvent) => {
-            setIsDrawing(true);
-            setStartPos({ x: event.offsetX, y: event.offsetY });
-        };
-
-        const handleMouseMove = (event: MouseEvent) => {
-            if (!isDrawing || !startPos) return;
-
-            const radiusX = Math.abs(event.offsetX - startPos.x);
-            const radiusY = Math.abs(event.offsetY - startPos.y);
-
-            context.clearRect(0, 0, canvas.width, canvas.height);
-
-            context.beginPath();
-
-            if (event.shiftKey) {
-                const radius = Math.max(radiusX, radiusY);
-                context.arc(startPos.x, startPos.y, radius, 0, Math.PI * 2);
-            } else {
-                context.ellipse(
-                    startPos.x,
-                    startPos.y,
-                    radiusX,
-                    radiusY,
-                    0,
-                    0,
-                    Math.PI * 2
-                );
-            }
-
-            context.stroke();
-        };
-
-        const handleMouseUp = () => {
-            setIsDrawing(false);
-            setStartPos(null);
-        };
-
-        canvas.addEventListener("mousedown", handleMouseDown);
-        canvas.addEventListener("mousemove", handleMouseMove);
-        canvas.addEventListener("mouseup", handleMouseUp);
-        canvas.addEventListener("mouseleave", handleMouseUp);
-
-        return () => {
-            canvas.removeEventListener("mousedown", handleMouseDown);
-            canvas.removeEventListener("mousemove", handleMouseMove);
-            canvas.removeEventListener("mouseup", handleMouseUp);
-            canvas.removeEventListener("mouseleave", handleMouseUp);
-        };
-    }, [isDrawing, startPos]);
-
-    const handleDrop = (event: React.DragEvent<HTMLCanvasElement>) => {
-        event.preventDefault();
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const context = canvas.getContext("2d");
-        if (!context) return;
-
-        const file = event.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const img = new Image();
-                img.onload = () => {
-                    context.clearRect(0, 0, canvas.width, canvas.height);
-                    context.drawImage(img, 0, 0, canvas.width, canvas.height);
-                };
-                if (reader.result) {
-                    img.src = reader.result as string;
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleDragOver = (event: React.DragEvent<HTMLCanvasElement>) => {
-        event.preventDefault(); 
-    };
-
-    return (
-        <div>
-            <canvas
-                ref={canvasRef}
-                className={styles.canvas}
-                width={800}
-                height={600}
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-            ></canvas>
-            <CanvasTools />
-        </div>
-    );
-};
-
-export default Canvas;
- */

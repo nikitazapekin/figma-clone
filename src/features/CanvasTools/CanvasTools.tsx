@@ -15,7 +15,6 @@ const buttons = [
         icon: ArrowIcon,
         value: "move",
         nestedButtons: [
-
             {
                 id: 2,
                 icon: ArrowIcon,
