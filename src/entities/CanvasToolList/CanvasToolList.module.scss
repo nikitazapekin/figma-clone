@@ -1,6 +1,7 @@
 .item {
     display: flex;
     column-gap: 3px;
+    position: relative;
 
     transition: 0.4s ease-in-out;
     &__image {
