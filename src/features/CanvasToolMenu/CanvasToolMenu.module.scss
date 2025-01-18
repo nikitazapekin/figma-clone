@@ -1,7 +1,17 @@
+@import "../../app/theme/theme.scss";
+
 .toolbar {
     position: absolute;
-    top:0;
+    top: 0;
     left: 0;
-    background-color: red;
-    transform: translateY(-100%);
+    transform: translateY(calc(-100% - 30px));
+
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    background-color: $white;
+    width: 100%;
+    border-radius: 10px;
+
+    //   transform: translateY(-100%);
 }
