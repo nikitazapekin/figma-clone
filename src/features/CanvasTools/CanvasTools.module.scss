@@ -1,6 +1,7 @@
 @import "../../app/theme/theme.scss";
 .canvas {
     position: fixed;
+    z-index: 111;
     bottom: 0;
     padding: 20px;
     left: 50%;

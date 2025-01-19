@@ -80,6 +80,7 @@ const buttons = [
         nestedButtons: null
     },
 ]
+
 const CanvasTools = () => {
     return (
         <div className={styles.canvas}>
