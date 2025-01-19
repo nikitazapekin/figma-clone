@@ -23,20 +23,19 @@ interface CanvasToolListItem {
 const CanvasToolList = ({ item, index }: CanvasToolListItem) => {
     const dispatch = useDispatch()
     const [isClicked, setIsClicked] = useState<boolean>(false)
-  //  const [clickedId, setIsClickedId] = useState<number>()
+ 
     const selectedOption = useSelector(CanvasOptionSelector);
     const selectedOptionId = useSelector(CanvasOptionIdSelector);
     const isOpenMenuToolbar = useSelector(CanvasIsOpenMenuToolbarSelector)
     const handleOpen = () => {
-      //  setIsClicked(prev => !prev)
+    
       dispatch(setOpenMenuToolbarList())
       dispatch(selectOption({value: item.value, id: item.id} ))
     }
 
     const handleSelect = () => {
         dispatch(selectOption({value: item.value, id: item.id} ))
-   //     dispatch(setOpenMenuToolbarList())
-     //   handleOpen()
+
       
 
     }

@@ -1,99 +1,97 @@
-import styles from "./CanvasTools.module.scss"
-import HandIcon from "@/assets/CanvasPanelIcons/hand-cursor.png"
-import ArrowIcon from "@/assets/CanvasPanelIcons/cursor.png"
-import ChatIcon from "@/assets/CanvasPanelIcons/chat.png"
-import FrameIcon from "@/assets/CanvasPanelIcons/frame.png"
-import PencilIcon from "@/assets/CanvasPanelIcons/pencil.png"
-import RoundIcon from "@/assets/CanvasPanelIcons/round.png"
-import SquareIcon from "@/assets/CanvasPanelIcons/square.png"
-import TextIcon from "@/assets/CanvasPanelIcons/text.png"
-import TriangleIcon from "@/assets/CanvasPanelIcons/triangle.png"
-import CanvasToolList from "@/entities/CanvasToolList/CanvasToolList"
-const buttons = [
+import { useState, useEffect } from "react";
+import styles from "./CanvasTools.module.scss";
+import { useSelector } from "react-redux";
+import { CanvasOptionIdSelector } from "@/pages/store/Selectors/CanvasSelector";
+import CanvasToolList from "@/entities/CanvasToolList/CanvasToolList";
+import HandIcon from "@/assets/CanvasPanelIcons/hand-cursor.png";
+import ArrowIcon from "@/assets/CanvasPanelIcons/cursor.png";
+import ChatIcon from "@/assets/CanvasPanelIcons/chat.png";
+import FrameIcon from "@/assets/CanvasPanelIcons/frame.png";
+import PencilIcon from "@/assets/CanvasPanelIcons/pencil.png";
+import RoundIcon from "@/assets/CanvasPanelIcons/round.png";
+import SquareIcon from "@/assets/CanvasPanelIcons/square.png";
+import TextIcon from "@/assets/CanvasPanelIcons/text.png";
+import TriangleIcon from "@/assets/CanvasPanelIcons/triangle.png";
+
+const initialButtons = [
     {
         id: 1,
         icon: ArrowIcon,
         value: "move",
         nestedButtons: [
-            {
-                id: 2,
-                icon: ArrowIcon,
-                value: "move",
-            },
-            {
-                id: 3,
-                icon: HandIcon,
-                value: "hand",
-            }
-        ]
+            { id: 2, icon: ArrowIcon, value: "move" },
+            { id: 3, icon: HandIcon, value: "hand" },
+        ],
     },
-
-
     {
         id: 4,
         icon: FrameIcon,
         value: "frame",
-        nestedButtons: null
+        nestedButtons: null,
     },
-
-
     {
         id: 5,
         icon: PencilIcon,
         value: "pencil",
-        nestedButtons: null
+        nestedButtons: null,
     },
-
-
     {
         id: 6,
         icon: SquareIcon,
         value: "square",
         nestedButtons: [
-            {
-                id: 7,
-                icon: SquareIcon,
-                value: "square",
-            },
-            {
-                id: 8,
-                icon: RoundIcon,
-                value: "round",
-            },
-            {
-                id: 9,
-                icon: TriangleIcon,
-                value: "triangle",
-            },
-        ]
+            { id: 7, icon: SquareIcon, value: "square" },
+            { id: 8, icon: RoundIcon, value: "round" },
+            { id: 9, icon: TriangleIcon, value: "triangle" },
+        ],
     },
     {
         id: 10,
         icon: TextIcon,
         value: "text",
-        nestedButtons: null
+        nestedButtons: null,
     },
     {
         id: 11,
         icon: ChatIcon,
         value: "chat",
-        nestedButtons: null
+        nestedButtons: null,
     },
-]
+];
 
 const CanvasTools = () => {
+    const selectedOptionId = useSelector(CanvasOptionIdSelector);
+    const [buttons, setButtons] = useState(initialButtons);
+
+    useEffect(() => {
+        setButtons((prevButtons) =>
+            prevButtons.map((item) => {
+                if (item.nestedButtons) {
+                    const nestedItem = item.nestedButtons.find(
+                        (nested) => nested.id === selectedOptionId
+                    );
+                    if (nestedItem) {
+                        return {
+                            ...item,
+                            icon: nestedItem.icon,
+                            value: nestedItem.value,
+                        };
+                    }
+                }
+                return item;
+            })
+        );
+    }, [selectedOptionId]);
+
+
+    console.log(JSON.stringify(buttons))
     return (
         <div className={styles.canvas}>
-            {
-                buttons.map((item, index) => (
-                    <CanvasToolList
-                        index={item.id}
-                        key={item.id}
-                        item={item}
-                    />
-                ))
-            }
-        </div>);
-}
+            {buttons.map((item) => (
+                <CanvasToolList key={item.id} index={item.id} item={item} />
+            ))}
+        </div>
+    );
+};
 
 export default CanvasTools;
