@@ -1,13 +1,29 @@
- 
+@import "./theme.scss";
 .wrapper {
   min-height: 100vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: auto;
+  height: 100%;
+ 
 }
 
 .content {
   flex: 1 1 auto;
+ 
+  height: 100%;
 }
  
+ 
+
+
+.wrapperMax {
+  
+  max-height: calc(100vh - 80px); 
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+ 
+
+}

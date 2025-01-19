@@ -1,13 +1,17 @@
+import Link from "next/link";
 import styles from "./ActionButton.module.scss"
 interface ActionButtonProps {
-    text: string
+    text: string,
+    link: string
 }
-const ActionButton = ({text}: ActionButtonProps) => {
-    return ( 
+const ActionButton = ({ text, link }: ActionButtonProps) => {
+    return (
         <div className={styles.button}>
-            {text}
+            <Link href={`${link}`}>
+                {text}
+            </Link>
         </div>
-     );
+    );
 }
- 
+
 export default ActionButton;

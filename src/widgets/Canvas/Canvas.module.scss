@@ -1,0 +1,11 @@
+@import "../../app/theme/theme.scss";
+.wrapper {
+  height: calc(100vh - 80px);
+  width: 100%;
+  display: flex;
+}
+
+.canvas {
+  flex: 1;
+  background-color: $grayLight;
+}

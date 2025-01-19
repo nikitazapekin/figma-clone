@@ -1,0 +1,24 @@
+import { RootState } from '../store';
+
+export const CanvasOptionSelector = (state: RootState) => {
+	const CanvasSlice = state.CanvasReducer;
+    return CanvasSlice.selectedOption 
+ 
+};
+
+export const CanvasOptionIdSelector = (state: RootState) => {
+	const CanvasSlice = state.CanvasReducer;
+    return CanvasSlice.selectedOptionId 
+ 
+};
+export const CanvasArrayOfFiguresSelector = (state: RootState) => {
+	const CanvasSlice = state.CanvasReducer;
+    return CanvasSlice.arrayOfFigures
+ 
+};
+export const CanvasIsOpenMenuToolbarSelector = (state: RootState) => {
+	const CanvasSlice = state.CanvasReducer;
+    return CanvasSlice.isOpenMenuToolbarList
+ 
+};
+ 
