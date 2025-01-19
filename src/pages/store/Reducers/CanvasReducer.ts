@@ -13,7 +13,9 @@ interface FigureObject {
 }
 interface CanvasReducerTypes {
   arrayOfFigures: FigureObject[],
-  selectedOption: string
+  selectedOption: string,
+  selectedOptionId: number,
+  isOpenMenuToolbarList: boolean
 }
 const initialState: CanvasReducerTypes = {
   arrayOfFigures: [
@@ -22,23 +24,32 @@ const initialState: CanvasReducerTypes = {
     {"coordX":506,"coordY":188,"type":"round","width":90,"height":60},
     {"coordX":306,"coordY":588,"type":"triangle","width":20,"height":20},
   ],
-  selectedOption: "move"
+  selectedOption: "move",
+  selectedOptionId: 0,
+  isOpenMenuToolbarList: false
 };
 const CanvasSlice = createSlice({
   name: 'canvas',
   initialState,
   reducers: {
-    selectOption(state, action: PayloadAction<string>) {
-      state.selectedOption = action.payload
-      
+    selectOption(state, action: PayloadAction<{value: string, id: number}>) {
+      state.selectedOption = action.payload.value
+      state.selectedOptionId = action.payload.id
+      console.log("ID", state.selectedOptionId)
+     
 
     },
     addFigure(state, action: PayloadAction<FigureObject>) {
       state.arrayOfFigures.push(action.payload)
-      console.log(state.arrayOfFigures)
+     
+    },
+   setOpenMenuToolbarList(state) {
+   
+     state.isOpenMenuToolbarList = !state.isOpenMenuToolbarList
+      
     }
   },
 });
 
-export const { selectOption, addFigure } = CanvasSlice.actions;
+export const { selectOption, addFigure, setOpenMenuToolbarList } = CanvasSlice.actions;
 export default CanvasSlice.reducer;

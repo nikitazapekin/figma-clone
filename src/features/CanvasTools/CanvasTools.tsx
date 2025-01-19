@@ -85,8 +85,9 @@ const CanvasTools = () => {
     return (
         <div className={styles.canvas}>
             {
-                buttons.map(item => (
+                buttons.map((item, index) => (
                     <CanvasToolList
+                        index={item.id}
                         key={item.id}
                         item={item}
                     />

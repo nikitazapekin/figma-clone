@@ -1,11 +1,11 @@
 import Image, { StaticImageData } from "next/image";
 import styles from "./CanvasToolList.module.scss"
 import DownArrow from "@/assets/CanvasPanelIcons/down-arrow1.png"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CanvasToolMenu from "@/features/CanvasToolMenu/CanvasToolMenu";
 import { useDispatch, useSelector } from 'react-redux';
-import { selectOption } from "@/pages/store/Reducers/CanvasReducer";
-import { CanvasOptionSelector } from "@/pages/store/Selectors/CanvasSelector";
+import { selectOption, setOpenMenuToolbarList } from "@/pages/store/Reducers/CanvasReducer";
+import { CanvasIsOpenMenuToolbarSelector, CanvasOptionSelector, CanvasOptionIdSelector } from "@/pages/store/Selectors/CanvasSelector";
 interface CanvasToolListNestedItem {
     id: number,
     icon: StaticImageData,
@@ -17,21 +17,30 @@ interface CanvasToolListItem {
         icon: StaticImageData,
         value: string,
         nestedButtons: null | CanvasToolListNestedItem[]
-    }
+    }, 
+    index: number
 }
-const CanvasToolList = ({ item }: CanvasToolListItem) => {
+const CanvasToolList = ({ item, index }: CanvasToolListItem) => {
     const dispatch = useDispatch()
     const [isClicked, setIsClicked] = useState<boolean>(false)
+  //  const [clickedId, setIsClickedId] = useState<number>()
     const selectedOption = useSelector(CanvasOptionSelector);
+    const selectedOptionId = useSelector(CanvasOptionIdSelector);
+    const isOpenMenuToolbar = useSelector(CanvasIsOpenMenuToolbarSelector)
     const handleOpen = () => {
-        setIsClicked(prev => !prev)
-
+      //  setIsClicked(prev => !prev)
+      dispatch(setOpenMenuToolbarList())
+      dispatch(selectOption({value: item.value, id: item.id} ))
     }
 
     const handleSelect = () => {
-        dispatch(selectOption(item.value))
+        dispatch(selectOption({value: item.value, id: item.id} ))
+   //     dispatch(setOpenMenuToolbarList())
+     //   handleOpen()
+      
 
     }
+ 
     return (
         <div className={`${styles.item} ${selectedOption==item.value ? styles.item__active : "" }`} >
             <Image src={item.icon}
@@ -48,13 +57,18 @@ const CanvasToolList = ({ item }: CanvasToolListItem) => {
                 )
             }
             {
-                isClicked && (
+               
+                    isOpenMenuToolbar && index==selectedOptionId && (
                     <CanvasToolMenu
+                    
                         nestedButtons={item.nestedButtons}
                     />
-                )
 
+
+                )
+                
             }
+            {index}, {selectedOptionId}
         </div>
     );
 }
