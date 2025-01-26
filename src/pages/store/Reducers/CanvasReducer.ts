@@ -1,3 +1,5 @@
+ 
+ 
 import {
   createSlice,
   PayloadAction
@@ -15,41 +17,41 @@ interface CanvasReducerTypes {
   arrayOfFigures: FigureObject[],
   selectedOption: string,
   selectedOptionId: number,
-  isOpenMenuToolbarList: boolean
+  isOpenMenuToolbarList: boolean,
+  isOpenLayoutPanel: boolean
 }
 const initialState: CanvasReducerTypes = {
   arrayOfFigures: [
-
-    {"coordX":306,"coordY":188,"type":"square","width":60,"height":60},
-    {"coordX":506,"coordY":188,"type":"round","width":90,"height":60},
-    {"coordX":306,"coordY":588,"type":"triangle","width":20,"height":20},
   ],
   selectedOption: "move",
   selectedOptionId: 0,
-  isOpenMenuToolbarList: false
+  isOpenMenuToolbarList: false,
+  isOpenLayoutPanel: false
 };
 const CanvasSlice = createSlice({
   name: 'canvas',
   initialState,
   reducers: {
-    selectOption(state, action: PayloadAction<{value: string, id: number}>) {
+    selectOption(state, action: PayloadAction<{ value: string, id: number }>) {
       state.selectedOption = action.payload.value
       state.selectedOptionId = action.payload.id
-      console.log("ID", state.selectedOptionId)
-     
 
     },
     addFigure(state, action: PayloadAction<FigureObject>) {
       state.arrayOfFigures.push(action.payload)
-     
+
     },
-   setOpenMenuToolbarList(state) {
-   
-     state.isOpenMenuToolbarList = !state.isOpenMenuToolbarList
-      
+    setOpenMenuToolbarList(state) {
+      state.isOpenMenuToolbarList = !state.isOpenMenuToolbarList
+    },
+
+
+    setOpenLayotPanel(state) {
+      state.isOpenLayoutPanel = !state.isOpenLayoutPanel
     }
   },
 });
 
-export const { selectOption, addFigure, setOpenMenuToolbarList } = CanvasSlice.actions;
+export const { selectOption, addFigure, setOpenMenuToolbarList, setOpenLayotPanel } = CanvasSlice.actions;
 export default CanvasSlice.reducer;
+ 

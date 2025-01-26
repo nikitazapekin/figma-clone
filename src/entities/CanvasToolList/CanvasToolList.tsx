@@ -67,7 +67,7 @@ const CanvasToolList = ({ item, index }: CanvasToolListItem) => {
                 )
                 
             }
-            {index}, {selectedOptionId}
+          
         </div>
     );
 }
