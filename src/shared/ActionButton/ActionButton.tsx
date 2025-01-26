@@ -1,17 +1,18 @@
-import Link from "next/link";
-import styles from "./ActionButton.module.scss"
+import React from "react";
+import styles from "./ActionButton.module.scss";
+
 interface ActionButtonProps {
-    text: string,
-    link: string
+  text: string;
+  link: string;
+  handleSubmit: () => void;  
 }
-const ActionButton = ({ text, link }: ActionButtonProps) => {
-    return (
-        <div className={styles.button}>
-            <Link href={`${link}`}>
-                {text}
-            </Link>
-        </div>
-    );
-}
+
+const ActionButton = ({ text, link, handleSubmit }: ActionButtonProps) => {
+  return (
+    <div className={styles.button} onClick={handleSubmit}>  
+      {text}
+    </div>
+  );
+};
 
 export default ActionButton;

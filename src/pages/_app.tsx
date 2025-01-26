@@ -7,20 +7,20 @@ import { Provider } from 'react-redux';
 import store from "@/pages/store/store"
 function MyApp({ Component, pageProps }: AppProps) {
     return (
-       <>
-       <Provider store={store}>
+        <>
+            <Provider store={store}>
 
-       <div className={styles.wrapper}>
+                <div className={styles.wrapper}>
 
-       <Header />
-       <div className={styles.content}>
+                    <Header />
+                    <div className={styles.content}>
 
-                {<Component {...pageProps} />}
-       </div>
-       </div>
-       </Provider>
-       </>
-        
+                        {<Component {...pageProps} />}
+                    </div>
+                </div>
+            </Provider>
+        </>
+
 
     );
 }

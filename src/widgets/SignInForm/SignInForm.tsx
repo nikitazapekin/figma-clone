@@ -28,7 +28,7 @@ const SignInForm = () => {
                         </div>
 
                         <ActionButton
-                        link={`CanvasPage`}
+                        link={`DraftsPage`}
                             text={"Войти"}
                         />
                         <p className={styles.form__or}>

@@ -21,4 +21,8 @@ export const CanvasIsOpenMenuToolbarSelector = (state: RootState) => {
     return CanvasSlice.isOpenMenuToolbarList
  
 };
+export const CanvasIsOpenLayoutPanelSelector = (state: RootState) => {
+	const CanvasSlice = state.CanvasReducer;
+    return CanvasSlice.isOpenLayoutPanel
+};
  
