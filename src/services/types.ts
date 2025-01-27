@@ -1,3 +1,8 @@
+export interface SignInTypes {
+    access_token: string
+}
+
 export interface SignUpTypes {
-    token: string
+   code: number,
+   message: string
 }

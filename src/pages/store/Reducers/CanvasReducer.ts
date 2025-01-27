@@ -7,6 +7,8 @@ import {
 
 
 interface FigureObject {
+ 
+ 
   coordX: number,
   coordY: number,
   type: string,

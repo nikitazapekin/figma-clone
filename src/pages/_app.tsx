@@ -9,12 +9,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     return (
         <>
             <Provider store={store}>
-
                 <div className={styles.wrapper}>
-
                     <Header />
                     <div className={styles.content}>
-
                         {<Component {...pageProps} />}
                     </div>
                 </div>
