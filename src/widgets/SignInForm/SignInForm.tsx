@@ -9,40 +9,46 @@ import Link from "next/link";
 import { useState } from "react";
 import { FormData } from "@/shared/types/FormData";
 import { SignInApi } from "@/services/auth";
+import { useRouter } from "next/router";
 const SignInForm = () => {
 
-
+    const router = useRouter();
+    
     const [formData, setFormData] = useState<FormData>({
         email: "",
         username: "",
         password: "",
-      });
-    
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState<string | null>(null);
-      const [successMessage, setSuccessMessage] = useState<string | null>(null);
-    
-      const handleInputChange = (field: string, value: string) => {
+    });
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    const handleInputChange = (field: string, value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
-      };
-    
-      const handleSubmit = async () => {
+    };
+
+    const handleSubmit = async () => {
         setLoading(true);
         setError(null);
         setSuccessMessage(null);
-    
-        try {
-          const data = await SignInApi(formData);
-          console.log(data)
-        } catch (error: any) {
-          const errorMessage = error instanceof Error ? error.message : "Произошла неизвестная ошибка.";
-          setError(errorMessage);
-        } finally {
-          setLoading(false);
-        }
-      };
 
-      
+        try {
+            const data = await SignInApi(formData);
+            console.log(data)
+            if (data.access_token) {
+                router.push("/DraftsPage");
+                localStorage.setItem('token', data.access_token);
+            }
+        } catch (error: any) {
+            const errorMessage = error instanceof Error ? error.message : "Произошла неизвестная ошибка.";
+            setError(errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
 
 
     return (
@@ -62,15 +68,15 @@ const SignInForm = () => {
                         <div className={styles.form__fields}>
                             {SignInConsts.map((item => (
                                 <AuthFormField title={item.title} placeholder={item.placeholder}
-                                field={item.field}
-                                handleInputChange={handleInputChange}
+                                    field={item.field}
+                                    handleInputChange={handleInputChange}
                                 />
                             )))}
                         </div>
 
                         <ActionButton
-                        link={`DraftsPage`}
-                        handleSubmit={handleSubmit}  
+                            link={`DraftsPage`}
+                            handleSubmit={handleSubmit}
                             text={"Войти"}
                         />
                         <p className={styles.form__or}>
@@ -85,7 +91,7 @@ const SignInForm = () => {
                         </div>
                         <p className={styles.form__or}>
                             <Link href={`/SignUp`} className={styles.form__link}>
-                            Зарегистрироваться
+                                Зарегистрироваться
                             </Link>
                         </p>
                     </div>

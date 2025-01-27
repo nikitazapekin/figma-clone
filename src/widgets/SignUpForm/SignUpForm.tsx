@@ -9,6 +9,7 @@ import ActionButton from "@/shared/ActionButton/ActionButton";
 import Link from "next/link";
 import { FormData } from "@/shared/types/FormData";
 import { SignUpApi } from "@/services/auth";
+import { useRouter } from "next/router";
 
 const SignUpForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
@@ -20,7 +21,7 @@ const SignUpForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
+  const router = useRouter()
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -29,9 +30,11 @@ const SignUpForm: React.FC = () => {
     setLoading(true);
     setError(null);
     setSuccessMessage(null);
-
     try {
-      const data = await SignUpApi(formData);
+      const response = await SignUpApi(formData);
+      if (response.code == 201) {
+        router.push(`/SignIn`)
+      }
     } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : "Произошла неизвестная ошибка.";
       setError(errorMessage);
@@ -44,7 +47,7 @@ const SignUpForm: React.FC = () => {
     <form
       className={styles.form}
       onSubmit={(e) => {
-        e.preventDefault();  
+        e.preventDefault();
         handleSubmit();
       }}
     >
@@ -75,7 +78,7 @@ const SignUpForm: React.FC = () => {
               <ActionButton
                 link="#"
                 text="Зарегистрироваться"
-                handleSubmit={handleSubmit}  
+                handleSubmit={handleSubmit}
               />
             )}
             {error && <p className={styles.form__error}>{error}</p>}
