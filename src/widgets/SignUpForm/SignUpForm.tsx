@@ -32,8 +32,6 @@ const SignUpForm: React.FC = () => {
 
     try {
       const data = await SignUpApi(formData);
-      console.log(data)
-    //  setSuccessMessage(data.message || "Регистрация прошла успешно!");
     } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : "Произошла неизвестная ошибка.";
       setError(errorMessage);
@@ -46,7 +44,7 @@ const SignUpForm: React.FC = () => {
     <form
       className={styles.form}
       onSubmit={(e) => {
-        e.preventDefault(); // Предотвращаем перезагрузку страницы
+        e.preventDefault();  
         handleSubmit();
       }}
     >
@@ -77,7 +75,7 @@ const SignUpForm: React.FC = () => {
               <ActionButton
                 link="#"
                 text="Зарегистрироваться"
-                handleSubmit={handleSubmit} // Передаем handleSubmit в ActionButton
+                handleSubmit={handleSubmit}  
               />
             )}
             {error && <p className={styles.form__error}>{error}</p>}
