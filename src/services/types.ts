@@ -3,6 +3,19 @@ export interface SignInTypes {
 }
 
 export interface SignUpTypes {
-   code: number,
-   message: string
+    code: number,
+    message: string
 }
+export interface CheckTokenTypes {
+    valid: boolean,
+    token: string
+}
+
+export interface AllDraftsResponse {
+    ID: number,
+    Name: string,
+    Description: string,
+    Likes: number,
+    CreatedAt: string,
+    AuthorID: number
+}[]

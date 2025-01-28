@@ -47,30 +47,4 @@ export const SignInApi = async (formData: FormData) => {
         }
     }
 }
-
-
-
-/*
-export const IsValidToken = async ( ) => {
-    try {
-        const response = await axios.get<SignInTypes>(
-            `http://${process.env.NEXT_PUBLIC_BASE_URL}:${process.env.NEXT_PUBLIC_PORT}/checkToken?${localStorage.getItem('token')}`,
-        
-            {
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
-        return response.data
-    } catch (e) {
-        if (axios.isAxiosError(e)) {
-            const errorMessage = e.response?.data?.message || e.message || "Неизвестная ошибка";
-            throw new Error(errorMessage);
-        } else {
-            throw new Error("Произошла неизвестная ошибка.");
-        }
-    }
-}
-*/
+ 
