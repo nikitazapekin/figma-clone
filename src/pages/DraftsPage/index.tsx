@@ -1,6 +1,6 @@
 import { GetServerSideProps } from 'next';
 import React from 'react';
-
+import { parse } from 'cookie';
 interface Draft {
   id: number;
   title: string;
@@ -12,6 +12,7 @@ interface DraftsPageProps {
 }
 
 const DraftsPage: React.FC<DraftsPageProps> = ({ drafts, error }) => {
+  console.log("Cock" + document.cookie);
   if (error) {
     return <div>Ошибка загрузки черновиков: {error}</div>;
   }
@@ -38,24 +39,20 @@ const DraftsPage: React.FC<DraftsPageProps> = ({ drafts, error }) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
+    const cookies = parse(context.req.headers.cookie || '');  
+    const token = cookies.access_token;  
  
-   const token = context.req.cookies.access_token;
-  //const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwNzAwMjgsInVzZXJfaWQiOjh9.TAjMGgVMgnlnyVfWPBiS-RLngFjY8JE9rkwuoFGHotA"
-   console.log("TOKEN", token)
-//const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwNzMzNjQsInVzZXJfaWQiOjE4fQ.g9fi8mTdkBaMJZnA_nvqJTjzAL-1td7yxj55oMbzrdc"
-    // Если токен не найден, возвращаем ошибку
     if (!token) {
       return { props: { drafts: [], error: 'Токен не найден, необходимо авторизоваться.' } };
     }
 
-    
     const response = await fetch(`http://${process.env.NEXT_PUBLIC_BASE_URL}:${process.env.NEXT_PUBLIC_PORT}/drafts`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      credentials: 'include', 
+      credentials: 'include',  
     });
 
     if (!response.ok) {
@@ -63,7 +60,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     const drafts = await response.json();
-    console.log(drafts)
+  
     return { props: { drafts } };
   } catch (error: unknown) {
     console.error('Error fetching drafts:', error);
@@ -71,5 +68,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return { props: { drafts: [], error: errorMessage } };
   }
 };
-
 export default DraftsPage;
