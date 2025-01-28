@@ -1,9 +1,10 @@
+
 import { GetServerSideProps } from 'next';
 import { parse } from 'cookie';
 import { GetAllDraftsApi } from '@/services/drafts';
-
-
-
+import DraftListHeader from '@/features/DraftListHeader/DraftListHeader';
+import DraftList from '@/widgets/DraftList/DraftList';
+ 
 
 
 interface DraftsPageProps {
@@ -11,31 +12,28 @@ interface DraftsPageProps {
   error?: string;
 }
 interface Draft {
-  id: number;
-  title: string;
+ 
+  ID: number,
+  Name: string,
+  Description: string,
+  Likes: number,
+  CreatedAt: string,
+  AuthorID: number
 }
 const DraftsPage: React.FC<DraftsPageProps> = ({ drafts, error }) => {
  
   if (error) {
+ 
     return <div>Ошибка загрузки черновиков: {error}</div>;
   }
 
   return (
     <div>
-      <h1>Черновики</h1>
-      {drafts.length === 0 ? (
-        <p>Нет черновиков.</p>
-      ) : (
-        <ul>
-
-          {JSON.stringify(drafts)}
-          {drafts.map((draft) => (
-            <li key={draft.id}>
-              <h2>{draft.title}</h2>
-            </li>
-          ))}
-        </ul>
-      )}
+ 
+        
+        <DraftList
+        drafts={drafts}
+        />
     </div>
   );
 };
@@ -47,6 +45,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const token = cookies.access_token;  
 
     if (!token) {
+      context.res.writeHead(302, { Location: '/SignIn' });
+      context.res.end();
       return {
         props: {
           drafts: [],
