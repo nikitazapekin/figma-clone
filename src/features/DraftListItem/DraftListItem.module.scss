@@ -1,0 +1,23 @@
+@use "../../app/theme/theme.scss" as *;
+
+.item {
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid $black;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+
+    &__title {
+        @include fontSize(32px);
+
+    }
+
+    &__created {
+        @include fontSize(20px);
+
+    }
+
+    &__describtion {
+        @include fontSize(20px);
+        font-weight: 400;
+    }
+}

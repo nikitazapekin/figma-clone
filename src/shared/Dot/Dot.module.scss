@@ -1,4 +1,4 @@
-@import "../../app/theme/theme.scss";
+@use "../../app/theme/theme.scss" as *;
 .dot {
     width: 15px;
     height: 15px;

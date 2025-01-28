@@ -1,4 +1,4 @@
-@import "../../app/theme/theme.scss";
+@use "../../app/theme/theme.scss" as *;
 
 .toolbar {
     position: absolute;

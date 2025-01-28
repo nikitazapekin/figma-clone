@@ -3,31 +3,43 @@ import Image from "next/image";
 import styles from "./Header.module.scss"
 import Link from "next/link";
 import Logo from "@/assets/logo.png"
-const Header = () => {
+interface HeaderProps {
+    isAuthenticated: boolean
+}
+const Header = ({ isAuthenticated }: HeaderProps) => {
     return (
         <header className={styles.header}>
             <div className={styles.header__container}>
-                <Link href="#" className={styles.header__logo}>
+                <Link href="/" className={styles.header__logo}>
                     <Image src={Logo}
-                    className={styles.header__logo__image}
-                    alt="Logo" />
+                        className={styles.header__logo__image}
+                        alt="Logo" />
                 </Link>
 
                 <nav className={styles.header__navigation}>
                     <ul className={styles.header__list}>
-                        <li className={styles.header__item}>
 
-                            <Link className={styles.header__link} href={`1`}>
-                                Главная
-                            </Link>
-                        </li>
+ 
+                        {isAuthenticated ?
+                         (
 
-                        <li className={styles.header__item}>
+                            <li className={styles.header__item}>
 
-                            <Link className={styles.header__link} href={`/SignIn`}>
-                                Вход
-                            </Link>
-                        </li>
+                                <Link className={styles.header__link} href={`/`}>
+                                    Выйти
+                                </Link>
+                            </li>
+                        )
+                        :
+                        (
+
+                            <li className={styles.header__item}>
+
+                                <Link className={styles.header__link} href={`/SignIn`}>
+                                    Вход
+                                </Link>
+                            </li>
+                        )}
 
 
                     </ul>

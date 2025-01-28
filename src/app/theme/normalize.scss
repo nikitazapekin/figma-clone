@@ -1,4 +1,4 @@
-@import "../theme/theme.scss";
+@use "../theme/theme.scss" as *;
 * {
     padding: 0;
     margin: 0;

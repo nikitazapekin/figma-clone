@@ -1,4 +1,4 @@
-@import "../../app/theme/theme.scss";
+@use "../../app/theme/theme.scss" as *;
 .field {
     width: 100%;
     &__wrapper {

@@ -1,4 +1,3 @@
- 
 import { useEffect, useRef, useState } from "react";
 import styles from "./Canvas.module.scss";
 import CanvasTools from "@/features/CanvasTools/CanvasTools";
@@ -60,18 +59,30 @@ const Canvas = () => {
         }
     }, []);
 
+    const calculateBounds = (x1: number, y1: number, x2: number, y2: number) => {
+        const leftX = Math.min(x1, x2);
+        const topY = Math.min(y1, y2);
+        const width = Math.abs(x2 - x1);
+        const height = Math.abs(y2 - y1);
+        return { leftX, topY, width, height };
+    };
+
     const drawSquare = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
-        const size = isShiftPressed ? Math.min(Math.abs(x - startX), Math.abs(y - startY)) : Math.abs(x - startX);
+        const { leftX, topY, width, height } = calculateBounds(startX, startY, x, y);
+        const size = isShiftPressed ? Math.min(width, height) : width;
+
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.strokeRect(startX, startY, size, isShiftPressed ? size : y - startY);
+        ctx.strokeRect(leftX, topY, size, size);
     };
 
     const drawCircle = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
+        const { leftX, topY, width, height } = calculateBounds(startX, startY, x, y);
         const radius = isShiftPressed
-            ? Math.min(Math.abs(x - startX), Math.abs(y - startY)) / 2
-            : Math.sqrt((x - startX) ** 2 + (y - startY) ** 2) / 2;
-        const centerX = (startX + x) / 2;
-        const centerY = (startY + y) / 2;
+            ? Math.min(width, height) / 2
+            : Math.sqrt(width ** 2 + height ** 2) / 2;
+
+        const centerX = leftX + width / 2;
+        const centerY = topY + height / 2;
 
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.beginPath();
@@ -81,14 +92,13 @@ const Canvas = () => {
     };
 
     const drawTriangle = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
-        const base = isShiftPressed ? Math.abs(x - startX) : x - startX;
-        const height = isShiftPressed ? base : y - startY;
+        const { leftX, topY, width, height } = calculateBounds(startX, startY, x, y);
 
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(startX + base / 2, startY + height);
-        ctx.lineTo(startX - base / 2, startY + height);
+        ctx.moveTo(leftX + width / 2, topY); 
+        ctx.lineTo(leftX, topY + height);  
+        ctx.lineTo(leftX + width, topY + height);  
         ctx.closePath();
         ctx.stroke();
     };
@@ -122,13 +132,12 @@ const Canvas = () => {
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
 
-        const width = Math.abs(mouseX - startX);
-        const height = isShiftPressed ? width : Math.abs(mouseY - startY);
+        const { leftX, topY, width, height } = calculateBounds(startX, startY, mouseX, mouseY);
 
         dispatch(
             addFigure({
-                coordX: startX,
-                coordY: startY,
+                coordX: leftX,
+                coordY: topY,
                 type: selectedOption,
                 width,
                 height,
@@ -167,29 +176,36 @@ const Canvas = () => {
                 break;
         }
     };
+
     useEffect(() => {
         const ctx = ctxRef.current;
         if (ctx) {
-          ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-          arrayOfFigures.forEach(figure => {
-            ctx.beginPath();
-            if (figure.type === "square") {
-              ctx.strokeRect(figure.coordX, figure.coordY, figure.width, figure.height);
-            } else if (figure.type === "round") {
-              const radius = Math.max(figure.width, figure.height) / 2;
-              ctx.arc(figure.coordX, figure.coordY, radius, 0, 2 * Math.PI);
-            } else if (figure.type === "triangle") {
-              const base = figure.width;
-              const height = figure.height;
-              ctx.moveTo(figure.coordX, figure.coordY);
-              ctx.lineTo(figure.coordX + base / 2, figure.coordY + height);
-              ctx.lineTo(figure.coordX - base / 2, figure.coordY + height);
-              ctx.closePath();
-            }
-            ctx.stroke();
-          });
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            arrayOfFigures.forEach(figure => {
+                ctx.beginPath();
+                if (figure.type === "square") {
+                    ctx.strokeRect(figure.coordX, figure.coordY, figure.width, figure.height);
+                } else if (figure.type === "round") {
+                    const radius = Math.max(figure.width, figure.height) / 2;
+                    ctx.arc(
+                        figure.coordX + figure.width / 2,
+                        figure.coordY + figure.height / 2,
+                        radius,
+                        0,
+                        2 * Math.PI
+                    );
+                } else if (figure.type === "triangle") {
+                    const base = figure.width;
+                    const height = figure.height;
+                    ctx.moveTo(figure.coordX + base / 2, figure.coordY);
+                    ctx.lineTo(figure.coordX, figure.coordY + height);
+                    ctx.lineTo(figure.coordX + base, figure.coordY + height);
+                    ctx.closePath();
+                }
+                ctx.stroke();
+            });
         }
-      }, [arrayOfFigures]);
+    }, [arrayOfFigures]);
 
     return (
         <div className={styles.wrapper}>
@@ -208,5 +224,3 @@ const Canvas = () => {
 };
 
 export default Canvas;
-
- 
