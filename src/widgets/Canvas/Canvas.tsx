@@ -24,6 +24,16 @@ const Canvas = () => {
     const [isShiftPressed, setIsShiftPressed] = useState(false);
     const [canvasImageData, setCanvasImageData] = useState<ImageData | null>(null);
     const [path, setPath] = useState<Point[]>([]);
+    const [text, setText] = useState("");
+    const [textPosition, setTextPosition] = useState<{ x: number; y: number } | null>(null);
+
+
+    const [offsetX, setOffsetX] = useState(0);
+    const [offsetY, setOffsetY] = useState(0);
+    const [lastMouseX, setLastMouseX] = useState(0);
+    const [lastMouseY, setLastMouseY] = useState(0);
+
+
     const updateCanvasSize = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -101,14 +111,26 @@ const Canvas = () => {
 
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.beginPath();
-        ctx.moveTo(leftX + width / 2, topY); 
-        ctx.lineTo(leftX, topY + height);  
-        ctx.lineTo(leftX + width, topY + height);  
+        ctx.moveTo(leftX + width / 2, topY);
+        ctx.lineTo(leftX, topY + height);
+        ctx.lineTo(leftX + width, topY + height);
         ctx.closePath();
         ctx.stroke();
     };
 
     const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+
+
+
+        if (selectedOption === "hand") {
+            setLastMouseX(e.clientX);
+            setLastMouseY(e.clientY);
+            setIsDown(true);
+            return;
+        }
+
+
+
         const canvas = canvasRef.current;
         if (!canvas) return;
 
@@ -122,13 +144,18 @@ const Canvas = () => {
         const y = e.clientY - rect.top;
         setPath([{ x, y }]);
 
-      
+
         if (ctx && selectedOption === "pencil") {
             ctx.beginPath();
             ctx.moveTo(x, y);
         }
         if (ctx) {
             setCanvasImageData(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        }
+        if (selectedOption === "text") {
+            setText("");
+            setTextPosition({ x, y });
+            return;
         }
     };
 
@@ -176,7 +203,7 @@ const Canvas = () => {
                     width: maxX - minX,
                     height: maxY - minY,
                     path,
-            // path: [1,1],
+                    // path: [1,1],
                     strokeWidth: 2,
                     color: "black",
                 })
@@ -188,6 +215,19 @@ const Canvas = () => {
 
     const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
         if (!isDown) return;
+
+
+
+        if (selectedOption === "hand") {
+            const dx = e.clientX - lastMouseX;
+            const dy = e.clientY - lastMouseY;
+            setOffsetX((prev) => prev + dx);
+            setOffsetY((prev) => prev + dy);
+            setLastMouseX(e.clientX);
+            setLastMouseY(e.clientY);
+            return;
+        }
+
 
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -226,7 +266,7 @@ const Canvas = () => {
             setPath((prevPath) => [...prevPath, { x, y }]);
         }
     };
-
+/* 
     useEffect(() => {
         const ctx = ctxRef.current;
         if (ctx) {
@@ -270,124 +310,65 @@ const Canvas = () => {
             });
         }
     }, [arrayOfFigures, arrayOfLines]);
-useEffect(()=> {
-console.log(arrayOfLines)
-}, [arrayOfLines])
-    return (
-        <div className={styles.wrapper}>
-            <canvas
-                ref={canvasRef}
-                className={styles.canvas}
-                style={{ border: "1px solid blue" }}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-            />
-            <CanvasTools />
-            <LayoutPanel />
-        </div>
-    );
-};
-
-export default Canvas;
+ */
 
 
-
-
-/*  
-import { useEffect, useRef, useState } from "react";
-import styles from "./Canvas.module.scss";
-import CanvasTools from "@/features/CanvasTools/CanvasTools";
-import { CanvasArrayOfFiguresSelector, CanvasOptionSelector } from "@/pages/store/Selectors/CanvasSelector";
-import { useDispatch, useSelector } from "react-redux";
-import { addFigure } from "@/pages/store/Reducers/CanvasReducer";
-import LayoutPanel from "../LayoutPanel/LayoutPanel";
-
-interface Point {
-    x: number;
-    y: number;
-}
-
-const Canvas: React.FC = () => {
-    const dispatch = useDispatch();
-    const arrayOfFigures = useSelector(CanvasArrayOfFiguresSelector);
-    const selectedOption = useSelector(CanvasOptionSelector);
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
-
-    const [startX, setStartX] = useState<number>(0);
-    const [startY, setStartY] = useState<number>(0);
-    const [isDown, setIsDown] = useState<boolean>(false);
-    const [canvasImageData, setCanvasImageData] = useState<ImageData | null>(null);
-    const [path, setPath] = useState<Point[]>([]);
 
     useEffect(() => {
-        const canvas = canvasRef.current;
-        if (canvas) {
-            ctxRef.current = canvas.getContext("2d");
-        }
-    }, []);
-
-    const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        setStartX(x);
-        setStartY(y);
-        setIsDown(true);
-        setPath([{ x, y }]);
-
         const ctx = ctxRef.current;
-        if (ctx && selectedOption === "pencil") {
-            ctx.beginPath();
-            ctx.moveTo(x, y);
+        if (ctx) {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.save();
+            ctx.translate(offsetX, offsetY);
+            arrayOfFigures.forEach(figure => {
+                ctx.beginPath();
+                if (figure.type === "square") {
+                    ctx.strokeRect(figure.coordX, figure.coordY, figure.width, figure.height);
+                } else if (figure.type === "round") {
+                    const radius = Math.max(figure.width, figure.height) / 2;
+                    ctx.arc(
+                        figure.coordX + figure.width / 2,
+                        figure.coordY + figure.height / 2,
+                        radius,
+                        0,
+                        2 * Math.PI
+                    );
+                } else if (figure.type === "triangle") {
+                    const base = figure.width;
+                    const height = figure.height;
+                    ctx.moveTo(figure.coordX + base / 2, figure.coordY);
+                    ctx.lineTo(figure.coordX, figure.coordY + height);
+                    ctx.lineTo(figure.coordX + base, figure.coordY + height);
+                    ctx.closePath();
+                }
+                ctx.stroke();
+            });
+
+            arrayOfLines.forEach(line => {
+                ctx.beginPath();
+                ctx.strokeStyle = line.color;
+                ctx.lineWidth = line.strokeWidth;
+                line.path.forEach((point, index) => {
+                    if (index === 0) {
+                        ctx.moveTo(point.x, point.y);
+                    } else {
+                        ctx.lineTo(point.x, point.y);
+                    }
+                });
+                ctx.stroke();
+            });
+            ctx.restore();
+        }
+    }, [arrayOfFigures, arrayOfLines, offsetX, offsetY]);
+    
+    const handleTextSubmit = () => {
+        if (text.trim() && textPosition) {
+         
+            setText("");
+            setTextPosition(null);
         }
     };
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        if (!isDown) return;
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const ctx = ctxRef.current;
-        if (!ctx) return;
-
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        if (selectedOption === "pencil") {
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            setPath((prevPath) => [...prevPath, { x, y }]);
-        }
-    };
-
-    const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        setIsDown(false);
-        if (selectedOption === "pencil" && path.length > 1) {
-            const minX = Math.min(...path.map(p => p.x));
-            const minY = Math.min(...path.map(p => p.y));
-            const maxX = Math.max(...path.map(p => p.x));
-            const maxY = Math.max(...path.map(p => p.y));
-
-            dispatch(
-                addFigure({
-                    coordX: minX,
-                    coordY: minY,
-                    type: "pencil",
-                    width: maxX - minX,
-                    height: maxY - minY,
-                    path,
-                    strokeWidth: 2,
-                    color: "black",
-                })
-            );
-        }
-    };
 
     return (
         <div className={styles.wrapper}>
@@ -399,6 +380,25 @@ const Canvas: React.FC = () => {
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
             />
+
+            {textPosition && (
+                <input
+                    type="text"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    onBlur={handleTextSubmit}
+                    style={{
+                        position: "absolute",
+                        left: `${textPosition.x}px`,
+                        top: `${textPosition.y}px`,
+                        border: "1px solid gray",
+                        fontSize: "16px",
+                        padding: "2px",
+                    }}
+                />
+            )}
+
+
             <CanvasTools />
             <LayoutPanel />
         </div>
@@ -406,4 +406,5 @@ const Canvas: React.FC = () => {
 };
 
 export default Canvas;
-  */
+
+ 
