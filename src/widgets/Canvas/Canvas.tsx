@@ -162,6 +162,7 @@ const Canvas = () => {
 
 
         if (selectedOption === "pencil" && path.length > 1) {
+            console.log("workkk")
             const minX = Math.min(...path.map(p => p.x));
             const minY = Math.min(...path.map(p => p.y));
             const maxX = Math.max(...path.map(p => p.x));
@@ -253,9 +254,25 @@ const Canvas = () => {
                 }
                 ctx.stroke();
             });
+
+            arrayOfLines.forEach(line => {
+                ctx.beginPath();
+                ctx.strokeStyle = line.color;
+                ctx.lineWidth = line.strokeWidth;
+                line.path.forEach((point, index) => {
+                    if (index === 0) {
+                        ctx.moveTo(point.x, point.y);
+                    } else {
+                        ctx.lineTo(point.x, point.y);
+                    }
+                });
+                ctx.stroke();
+            });
         }
     }, [arrayOfFigures, arrayOfLines]);
-
+useEffect(()=> {
+console.log(arrayOfLines)
+}, [arrayOfLines])
     return (
         <div className={styles.wrapper}>
             <canvas

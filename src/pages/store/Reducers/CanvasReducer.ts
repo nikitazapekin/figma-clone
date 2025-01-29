@@ -68,7 +68,7 @@ const CanvasSlice = createSlice({
 
     },
     addLine(state, action: PayloadAction<LineObject>) {
-      state.arrayOfFigures.push(action.payload)
+      state.arrayOfLines.push(action.payload)
 
     },
     setOpenMenuToolbarList(state) {
