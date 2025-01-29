@@ -1,0 +1,10 @@
+@use "../../app/theme/theme.scss" as *;
+
+.personal {
+    display: flex;
+    column-gap: 20px;
+
+    &__title {
+        @include fontSize(48px)
+    }
+}

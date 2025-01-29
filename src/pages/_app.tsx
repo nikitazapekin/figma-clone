@@ -7,7 +7,8 @@ import store from "@/pages/store/store";
 
 import axios from 'axios';
 import { useEffect, useState } from 'react';
- 
+import { useRouter } from 'next/router';
+
 
 
 interface RespTypes {
@@ -18,6 +19,7 @@ interface RespTypes {
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const router = useRouter()
   useEffect(() => {
     const fetchAuthStatus = async () => {
       try {
@@ -27,12 +29,12 @@ function MyApp({ Component, pageProps }: AppProps) {
 
       } catch (error) {
         setIsAuthenticated(false)
-
+        router.push("/SignIn")
       }
     };
 
     fetchAuthStatus();
-  }, []);
+  }, [isAuthenticated]);
 
   return (
     <Provider store={store}>
@@ -40,11 +42,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Header isAuthenticated={isAuthenticated} />
         <div className={styles.content}>
           <Component {...pageProps} />
-         
+
         </div>
       </div>
 
-   
+
     </Provider>
   );
 }

@@ -1,11 +1,16 @@
-import Avatar from "@/features/Avatar/Avatar";
-
+import Avatar from "@/entities/Avatar/Avatar";
+import styles from "./PersonalInfoComponent.module.scss"
+import PersonalPrevviewCompoent from "@/features/PersonalPreviewComponent/PerosnalPreviewComponent";
 const PersonalInfoComponent = () => {
     return (
-        <div>
-            <Avatar 
-            
-            />
+        <div className={styles.personal}>
+            <div className={styles.personal__container}>
+             
+                <PersonalPrevviewCompoent
+                />
+            </div>
+
+
         </div>
     );
 }

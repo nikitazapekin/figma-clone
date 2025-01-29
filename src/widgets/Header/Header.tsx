@@ -27,7 +27,7 @@ const Header = ({ isAuthenticated }: HeaderProps) => {
                                         </Link>
                                     </li>
                                     <li className={styles.header__item}>
-                                        <Link className={styles.header__link} href={`/ProfilePage`}>
+                                        <Link className={styles.header__link} href={`/PersonalPage`}>
                                             Профиль
                                         </Link>
                                     </li>

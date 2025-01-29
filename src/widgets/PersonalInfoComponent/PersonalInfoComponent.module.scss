@@ -1,0 +1,15 @@
+.personal {
+    width: 100%;
+    margin-top: 20px;
+    height: auto;
+    &__container {
+        width: 100%;
+       
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1440px;
+        margin: 0 auto;
+
+    }
+}

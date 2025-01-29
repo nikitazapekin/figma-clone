@@ -1,3 +1,4 @@
+import { useRouter } from "next/router"
 import styles from "./DraftListItem.module.scss"
 interface DraftListItemProps {
     item: {
@@ -10,7 +11,13 @@ interface DraftListItemProps {
     }
 }
 const DraftListItem = ({ item }: DraftListItemProps) => {
-    return (<div className={styles.item}>
+    const router = useRouter()
+    const handleNavigate = () => {
+        router.push(`/CanvasPage`)
+    }
+    return (<div className={styles.item}
+        onClick={handleNavigate}
+    >
         <h2 className={styles.item__title}>
             {item.Name}
         </h2>
@@ -18,7 +25,7 @@ const DraftListItem = ({ item }: DraftListItemProps) => {
             Создано: {item.CreatedAt}
         </h3>
         <h4 className={styles.item__decribtion}>
-           Описание: {item.Description}
+            Описание: {item.Description}
         </h4>
 
     </div>);
