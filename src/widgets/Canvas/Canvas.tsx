@@ -1,14 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./Canvas.module.scss";
 import CanvasTools from "@/features/CanvasTools/CanvasTools";
-import { CanvasArrayOfFiguresSelector, CanvasOptionSelector } from "@/pages/store/Selectors/CanvasSelector";
+import { CanvasArrayOfFiguresSelector, CanvasArrayOfLinesSelector, CanvasOptionSelector } from "@/pages/store/Selectors/CanvasSelector";
 import { useDispatch, useSelector } from "react-redux";
-import { addFigure } from "@/pages/store/Reducers/CanvasReducer";
+import { addFigure, addLine } from "@/pages/store/Reducers/CanvasReducer";
 import LayoutPanel from "../LayoutPanel/LayoutPanel";
+interface Point {
+    x: number;
+    y: number;
+}
 
 const Canvas = () => {
     const dispatch = useDispatch();
     const arrayOfFigures = useSelector(CanvasArrayOfFiguresSelector);
+    const arrayOfLines = useSelector(CanvasArrayOfLinesSelector);
     const selectedOption = useSelector(CanvasOptionSelector);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -18,7 +23,7 @@ const Canvas = () => {
     const [isDown, setIsDown] = useState(false);
     const [isShiftPressed, setIsShiftPressed] = useState(false);
     const [canvasImageData, setCanvasImageData] = useState<ImageData | null>(null);
-
+    const [path, setPath] = useState<Point[]>([]);
     const updateCanvasSize = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -113,6 +118,15 @@ const Canvas = () => {
         setIsDown(true);
 
         const ctx = ctxRef.current;
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        setPath([{ x, y }]);
+
+      
+        if (ctx && selectedOption === "pencil") {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
         if (ctx) {
             setCanvasImageData(ctx.getImageData(0, 0, canvas.width, canvas.height));
         }
@@ -143,6 +157,32 @@ const Canvas = () => {
                 height,
             })
         );
+
+
+
+
+        if (selectedOption === "pencil" && path.length > 1) {
+            const minX = Math.min(...path.map(p => p.x));
+            const minY = Math.min(...path.map(p => p.y));
+            const maxX = Math.max(...path.map(p => p.x));
+            const maxY = Math.max(...path.map(p => p.y));
+
+            dispatch(
+                addLine({
+                    coordX: minX,
+                    coordY: minY,
+                    type: "pencil",
+                    width: maxX - minX,
+                    height: maxY - minY,
+                    path,
+            // path: [1,1],
+                    strokeWidth: 2,
+                    color: "black",
+                })
+            );
+
+
+        }
     };
 
     const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -175,6 +215,15 @@ const Canvas = () => {
             default:
                 break;
         }
+
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        if (selectedOption === "pencil") {
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            setPath((prevPath) => [...prevPath, { x, y }]);
+        }
     };
 
     useEffect(() => {
@@ -205,7 +254,7 @@ const Canvas = () => {
                 ctx.stroke();
             });
         }
-    }, [arrayOfFigures]);
+    }, [arrayOfFigures, arrayOfLines]);
 
     return (
         <div className={styles.wrapper}>
@@ -224,3 +273,120 @@ const Canvas = () => {
 };
 
 export default Canvas;
+
+
+
+
+/*  
+import { useEffect, useRef, useState } from "react";
+import styles from "./Canvas.module.scss";
+import CanvasTools from "@/features/CanvasTools/CanvasTools";
+import { CanvasArrayOfFiguresSelector, CanvasOptionSelector } from "@/pages/store/Selectors/CanvasSelector";
+import { useDispatch, useSelector } from "react-redux";
+import { addFigure } from "@/pages/store/Reducers/CanvasReducer";
+import LayoutPanel from "../LayoutPanel/LayoutPanel";
+
+interface Point {
+    x: number;
+    y: number;
+}
+
+const Canvas: React.FC = () => {
+    const dispatch = useDispatch();
+    const arrayOfFigures = useSelector(CanvasArrayOfFiguresSelector);
+    const selectedOption = useSelector(CanvasOptionSelector);
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+
+    const [startX, setStartX] = useState<number>(0);
+    const [startY, setStartY] = useState<number>(0);
+    const [isDown, setIsDown] = useState<boolean>(false);
+    const [canvasImageData, setCanvasImageData] = useState<ImageData | null>(null);
+    const [path, setPath] = useState<Point[]>([]);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (canvas) {
+            ctxRef.current = canvas.getContext("2d");
+        }
+    }, []);
+
+    const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        setStartX(x);
+        setStartY(y);
+        setIsDown(true);
+        setPath([{ x, y }]);
+
+        const ctx = ctxRef.current;
+        if (ctx && selectedOption === "pencil") {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+    };
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        if (!isDown) return;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = ctxRef.current;
+        if (!ctx) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        if (selectedOption === "pencil") {
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            setPath((prevPath) => [...prevPath, { x, y }]);
+        }
+    };
+
+    const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        setIsDown(false);
+        if (selectedOption === "pencil" && path.length > 1) {
+            const minX = Math.min(...path.map(p => p.x));
+            const minY = Math.min(...path.map(p => p.y));
+            const maxX = Math.max(...path.map(p => p.x));
+            const maxY = Math.max(...path.map(p => p.y));
+
+            dispatch(
+                addFigure({
+                    coordX: minX,
+                    coordY: minY,
+                    type: "pencil",
+                    width: maxX - minX,
+                    height: maxY - minY,
+                    path,
+                    strokeWidth: 2,
+                    color: "black",
+                })
+            );
+        }
+    };
+
+    return (
+        <div className={styles.wrapper}>
+            <canvas
+                ref={canvasRef}
+                className={styles.canvas}
+                style={{ border: "1px solid blue" }}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+            />
+            <CanvasTools />
+            <LayoutPanel />
+        </div>
+    );
+};
+
+export default Canvas;
+  */

@@ -16,6 +16,14 @@ export const CanvasArrayOfFiguresSelector = (state: RootState) => {
     return CanvasSlice.arrayOfFigures
  
 };
+
+export const CanvasArrayOfLinesSelector = (state: RootState) => {
+	const CanvasSlice = state.CanvasReducer;
+    return CanvasSlice.arrayOfLines
+ 
+};
+
+
 export const CanvasIsOpenMenuToolbarSelector = (state: RootState) => {
 	const CanvasSlice = state.CanvasReducer;
     return CanvasSlice.isOpenMenuToolbarList

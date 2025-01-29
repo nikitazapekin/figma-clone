@@ -15,8 +15,31 @@ interface FigureObject {
   width: number,
   height: number
 }
+
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface LineObject {
+ 
+  
+
+  coordX: number,
+  coordY: number,
+  type: string,
+  width:  number,
+  height: number,
+ // path: number[],
+  path: Point[],
+  strokeWidth: number,
+  color: string,
+}
+
+
 interface CanvasReducerTypes {
   arrayOfFigures: FigureObject[],
+  arrayOfLines: LineObject[],
   selectedOption: string,
   selectedOptionId: number,
   isOpenMenuToolbarList: boolean,
@@ -25,6 +48,7 @@ interface CanvasReducerTypes {
 const initialState: CanvasReducerTypes = {
   arrayOfFigures: [
   ],
+  arrayOfLines: [],
   selectedOption: "move",
   selectedOptionId: 0,
   isOpenMenuToolbarList: false,
@@ -43,6 +67,10 @@ const CanvasSlice = createSlice({
       state.arrayOfFigures.push(action.payload)
 
     },
+    addLine(state, action: PayloadAction<LineObject>) {
+      state.arrayOfFigures.push(action.payload)
+
+    },
     setOpenMenuToolbarList(state) {
       state.isOpenMenuToolbarList = !state.isOpenMenuToolbarList
     },
@@ -54,6 +82,6 @@ const CanvasSlice = createSlice({
   },
 });
 
-export const { selectOption, addFigure, setOpenMenuToolbarList, setOpenLayotPanel } = CanvasSlice.actions;
+export const { selectOption, addFigure, setOpenMenuToolbarList, setOpenLayotPanel, addLine } = CanvasSlice.actions;
 export default CanvasSlice.reducer;
  
