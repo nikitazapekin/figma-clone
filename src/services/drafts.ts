@@ -1,4 +1,5 @@
-import axios from 'axios';
+ 
+ import axios from 'axios';
 
 export const GetAllDraftsApi = async (token: string) => {
   try {
@@ -21,3 +22,4 @@ export const GetAllDraftsApi = async (token: string) => {
     throw new Error('Произошла неизвестная ошибка.');
   }
 };
+ 

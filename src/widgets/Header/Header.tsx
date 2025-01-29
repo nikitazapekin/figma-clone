@@ -15,31 +15,39 @@ const Header = ({ isAuthenticated }: HeaderProps) => {
                         className={styles.header__logo__image}
                         alt="Logo" />
                 </Link>
-
                 <nav className={styles.header__navigation}>
                     <ul className={styles.header__list}>
-
- 
                         {isAuthenticated ?
-                         (
+                            (
+                                <>
+                                    <li className={styles.header__item}>
 
-                            <li className={styles.header__item}>
+                                        <Link className={styles.header__link} href={`/DraftsPage`}>
+                                            Чертежи
+                                        </Link>
+                                    </li>
+                                    <li className={styles.header__item}>
+                                        <Link className={styles.header__link} href={`/ProfilePage`}>
+                                            Профиль
+                                        </Link>
+                                    </li>
+                                    <li className={styles.header__item}>
+                                        <Link className={styles.header__link} href={`/`}>
+                                            Выйти
+                                        </Link>
+                                    </li>
+                                </>
+                            )
+                            :
+                            (
 
-                                <Link className={styles.header__link} href={`/`}>
-                                    Выйти
-                                </Link>
-                            </li>
-                        )
-                        :
-                        (
+                                <li className={styles.header__item}>
 
-                            <li className={styles.header__item}>
-
-                                <Link className={styles.header__link} href={`/SignIn`}>
-                                    Вход
-                                </Link>
-                            </li>
-                        )}
+                                    <Link className={styles.header__link} href={`/SignIn`}>
+                                        Вход
+                                    </Link>
+                                </li>
+                            )}
 
 
                     </ul>

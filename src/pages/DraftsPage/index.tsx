@@ -1,10 +1,9 @@
 
 import { GetServerSideProps } from 'next';
 import { parse } from 'cookie';
-import { GetAllDraftsApi } from '@/services/drafts';
-import DraftListHeader from '@/features/DraftListHeader/DraftListHeader';
-import DraftList from '@/widgets/DraftList/DraftList';
  
+import DraftList from '@/widgets/DraftList/DraftList';
+ import { GetAllDraftsApi } from '@/services/drafts';
 
 
 interface DraftsPageProps {
