@@ -4,11 +4,12 @@ import {
   createSlice,
   PayloadAction
 } from '@reduxjs/toolkit';
+ 
 
 
 interface FigureObject {
  
- 
+  id: number;
   coordX: number,
   coordY: number,
   type: string,
@@ -47,6 +48,8 @@ interface CanvasReducerTypes {
 }
 const initialState: CanvasReducerTypes = {
   arrayOfFigures: [
+    { id: 1, coordX: 200, coordY: 200, type: "round", width: 200, height: 200 }
+ //   {coordX: 200, coordY: 200, type: "round", width: 200, height: 200}
   ],
   arrayOfLines: [],
   selectedOption: "move",
@@ -71,6 +74,14 @@ const CanvasSlice = createSlice({
       state.arrayOfLines.push(action.payload)
 
     },
+    updateFigure(state, action: PayloadAction<FigureObject>) {
+      const index = state.arrayOfFigures.findIndex(fig => fig.id === action.payload.id);
+      
+      if (index !== -1) {
+        state.arrayOfFigures[index] = action.payload;
+      }
+    },
+    
     setOpenMenuToolbarList(state) {
       state.isOpenMenuToolbarList = !state.isOpenMenuToolbarList
     },
@@ -82,6 +93,6 @@ const CanvasSlice = createSlice({
   },
 });
 
-export const { selectOption, addFigure, setOpenMenuToolbarList, setOpenLayotPanel, addLine } = CanvasSlice.actions;
+export const { selectOption, addFigure, setOpenMenuToolbarList, setOpenLayotPanel, addLine, updateFigure } = CanvasSlice.actions;
 export default CanvasSlice.reducer;
  

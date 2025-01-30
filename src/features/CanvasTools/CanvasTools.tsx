@@ -83,8 +83,7 @@ const CanvasTools = () => {
         );
     }, [selectedOptionId]);
 
-
-    console.log(JSON.stringify(buttons))
+ 
     return (
         <div className={styles.canvas}>
             {buttons.map((item) => (

@@ -1,13 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+  import { useEffect, useRef, useState } from "react";
 import styles from "./Canvas.module.scss";
 import CanvasTools from "@/features/CanvasTools/CanvasTools";
 import { CanvasArrayOfFiguresSelector, CanvasArrayOfLinesSelector, CanvasOptionSelector } from "@/pages/store/Selectors/CanvasSelector";
 import { useDispatch, useSelector } from "react-redux";
-import { addFigure, addLine } from "@/pages/store/Reducers/CanvasReducer";
+import { addFigure, addLine, updateFigure } from "@/pages/store/Reducers/CanvasReducer";
 import LayoutPanel from "../LayoutPanel/LayoutPanel";
 interface Point {
     x: number;
     y: number;
+}
+
+interface FigureObject {
+    id: number;
+    coordX: number;
+    coordY: number;
+    type: string;
+    width: number;
+    height: number;
 }
 
 const Canvas = () => {
@@ -32,7 +41,7 @@ const Canvas = () => {
     const [offsetY, setOffsetY] = useState(0);
     const [lastMouseX, setLastMouseX] = useState(0);
     const [lastMouseY, setLastMouseY] = useState(0);
-
+    const [selectedFigure, setSelectedFigure] = useState<any>(null);
 
     const updateCanvasSize = () => {
         const canvas = canvasRef.current;
@@ -117,10 +126,18 @@ const Canvas = () => {
         ctx.closePath();
         ctx.stroke();
     };
-
+    
     const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-
-
+        
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        setStartX(e.clientX - rect.left);
+        setStartY(e.clientY - rect.top);
+        setIsDown(true);
 
         if (selectedOption === "hand") {
             setLastMouseX(e.clientX);
@@ -129,19 +146,37 @@ const Canvas = () => {
             return;
         }
 
+       /*  if (selectedOption === "move" //&& selectedFigure
 
-
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const rect = canvas.getBoundingClientRect();
-        setStartX(e.clientX - rect.left);
-        setStartY(e.clientY - rect.top);
-        setIsDown(true);
+        ) {
+            const foundFigure = arrayOfFigures.find(
+                (fig) => x >= fig.coordX && x <= fig.coordX + fig.width && y >= fig.coordY && y <= fig.coordY + fig.height
+            );
+            if (foundFigure) {
+                setSelectedFigure(foundFigure);
+                setLastMouseX(x - foundFigure.coordX);
+                setLastMouseY(y - foundFigure.coordY);
+                setIsDown(true);
+            }
+            return;
+        }
+ */
+        if (selectedOption === "move") {
+            const foundFigure = arrayOfFigures.find(
+                (fig) => 
+                    x >= fig.coordX && x <= fig.coordX + fig.width && 
+                    y >= fig.coordY && y <= fig.coordY + fig.height
+            );
+            if (foundFigure) {
+                setSelectedFigure(foundFigure);
+                setLastMouseX(x);
+                setLastMouseY(y);
+                setIsDown(true);
+            }
+            return;
+        }
 
         const ctx = ctxRef.current;
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
         setPath([{ x, y }]);
 
 
@@ -177,6 +212,7 @@ const Canvas = () => {
 
         dispatch(
             addFigure({
+                id: arrayOfFigures.length+1,
                 coordX: leftX,
                 coordY: topY,
                 type: selectedOption,
@@ -189,7 +225,7 @@ const Canvas = () => {
 
 
         if (selectedOption === "pencil" && path.length > 1) {
-            console.log("workkk")
+           
             const minX = Math.min(...path.map(p => p.x));
             const minY = Math.min(...path.map(p => p.y));
             const maxX = Math.max(...path.map(p => p.x));
@@ -203,7 +239,7 @@ const Canvas = () => {
                     width: maxX - minX,
                     height: maxY - minY,
                     path,
-                    // path: [1,1],
+                 
                     strokeWidth: 2,
                     color: "black",
                 })
@@ -211,9 +247,12 @@ const Canvas = () => {
 
 
         }
+        setSelectedFigure(null);
     };
 
     const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
         if (!isDown) return;
 
 
@@ -227,17 +266,27 @@ const Canvas = () => {
             setLastMouseY(e.clientY);
             return;
         }
-
-
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const ctx = ctxRef.current;
-        if (!ctx) return;
-
+        
         const rect = canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
+        
+         
+                        const deltaX = mouseX - lastMouseX;
+                        const deltaY = mouseY - lastMouseY;
+                        const newFigure = { ...selectedFigure };
+                        newFigure.coordX += deltaX;
+                        newFigure.coordY += deltaY;
+                        newFigure.right = newFigure.coordX + newFigure.width;
+                        newFigure.bottom = newFigure.coordY + newFigure.height;
+              
+                        dispatch(updateFigure(newFigure));
+
+                        setLastMouseX(mouseX);
+                        setLastMouseY(mouseY);
+        const ctx = ctxRef.current;
+        if (!ctx) return;
+
 
         if (canvasImageData) {
             ctx.putImageData(canvasImageData, 0, 0);
@@ -265,52 +314,40 @@ const Canvas = () => {
             ctx.stroke();
             setPath((prevPath) => [...prevPath, { x, y }]);
         }
-    };
-/* 
-    useEffect(() => {
-        const ctx = ctxRef.current;
-        if (ctx) {
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            arrayOfFigures.forEach(figure => {
-                ctx.beginPath();
-                if (figure.type === "square") {
-                    ctx.strokeRect(figure.coordX, figure.coordY, figure.width, figure.height);
-                } else if (figure.type === "round") {
-                    const radius = Math.max(figure.width, figure.height) / 2;
-                    ctx.arc(
-                        figure.coordX + figure.width / 2,
-                        figure.coordY + figure.height / 2,
-                        radius,
-                        0,
-                        2 * Math.PI
-                    );
-                } else if (figure.type === "triangle") {
-                    const base = figure.width;
-                    const height = figure.height;
-                    ctx.moveTo(figure.coordX + base / 2, figure.coordY);
-                    ctx.lineTo(figure.coordX, figure.coordY + height);
-                    ctx.lineTo(figure.coordX + base, figure.coordY + height);
-                    ctx.closePath();
-                }
-                ctx.stroke();
-            });
 
-            arrayOfLines.forEach(line => {
-                ctx.beginPath();
-                ctx.strokeStyle = line.color;
-                ctx.lineWidth = line.strokeWidth;
-                line.path.forEach((point, index) => {
-                    if (index === 0) {
-                        ctx.moveTo(point.x, point.y);
-                    } else {
-                        ctx.lineTo(point.x, point.y);
-                    }
-                });
-                ctx.stroke();
-            });
+
+        if (selectedOption === "move" && selectedFigure) {
+          /*   const deltaX = mouseX - lastMouseX;
+            const deltaY = mouseY - lastMouseY;
+        
+            const updatedFigure = { 
+                ...selectedFigure, 
+                coordX: selectedFigure.coordX + deltaX,
+                coordY: selectedFigure.coordY + deltaY
+            };
+        
+            dispatch(updateFigure(updatedFigure)); 
+            setSelectedFigure(updatedFigure);  
+        
+            setLastMouseX(mouseX);
+            setLastMouseY(mouseY); */
+
+
+            const updatedFigure = { 
+                ...selectedFigure, 
+                coordX: selectedFigure.coordX + deltaX,
+                coordY: selectedFigure.coordY + deltaY
+            };
+    
+            dispatch(updateFigure(updatedFigure));
+            setSelectedFigure(updatedFigure);
+            setLastMouseX(mouseX);
+            setLastMouseY(mouseY);
         }
-    }, [arrayOfFigures, arrayOfLines]);
- */
+        
+  
+    };
+ 
 
 
 
@@ -359,8 +396,8 @@ const Canvas = () => {
             });
             ctx.restore();
         }
-    }, [arrayOfFigures, arrayOfLines, offsetX, offsetY]);
-    
+    }, [arrayOfFigures, arrayOfLines, offsetX, offsetY, selectedFigure]);
+
     const handleTextSubmit = () => {
         if (text.trim() && textPosition) {
          
@@ -369,7 +406,20 @@ const Canvas = () => {
         }
     };
 
+    useEffect(()=> {
+console.log("SEl", selectedFigure)
+    }, [selectedFigure])
 
+
+    useEffect(() => {
+        if (selectedFigure) {
+            const updatedFigure = arrayOfFigures.find(fig => fig.coordX === selectedFigure.coordX && fig.coordY === selectedFigure.coordY);
+            if (updatedFigure) {
+                setSelectedFigure(updatedFigure);
+            }
+        }
+    }, [arrayOfFigures]);
+    
     return (
         <div className={styles.wrapper}>
             <canvas
@@ -406,5 +456,8 @@ const Canvas = () => {
 };
 
 export default Canvas;
+
+ 
+
 
  
