@@ -3,7 +3,7 @@ import styles from "./Canvas.module.scss";
 import CanvasTools from "@/features/CanvasTools/CanvasTools";
 import { CanvasArrayOfFiguresSelector, CanvasArrayOfLinesSelector, CanvasOptionSelector } from "@/pages/store/Selectors/CanvasSelector";
 import { useDispatch, useSelector } from "react-redux";
-import { addFigure, addLine, updateFigure } from "@/pages/store/Reducers/CanvasReducer";
+import { addFigure, addFrame, addLine, updateFigure } from "@/pages/store/Reducers/CanvasReducer";
 import LayoutPanel from "../LayoutPanel/LayoutPanel";
 interface Point {
     x: number;
@@ -247,6 +247,25 @@ const Canvas = () => {
 
 
         }
+
+
+
+        if (selectedOption === "frame") {
+            dispatch(
+                addFrame({
+                    id: arrayOfFigures.length + 1,
+                    coordX: leftX,
+                    coordY: topY,
+                    width,
+                    height,
+                    type: "frame",
+                   background: "#fff"
+                })
+            );
+        }
+
+
+
         setSelectedFigure(null);
     };
 
@@ -302,6 +321,9 @@ const Canvas = () => {
             case "triangle":
                 drawTriangle(ctx, mouseX, mouseY);
                 break;
+
+                case "frame":
+                    drawFrame(ctx, mouseX, mouseY);
             default:
                 break;
         }
@@ -317,20 +339,7 @@ const Canvas = () => {
 
 
         if (selectedOption === "move" && selectedFigure) {
-          /*   const deltaX = mouseX - lastMouseX;
-            const deltaY = mouseY - lastMouseY;
-        
-            const updatedFigure = { 
-                ...selectedFigure, 
-                coordX: selectedFigure.coordX + deltaX,
-                coordY: selectedFigure.coordY + deltaY
-            };
-        
-            dispatch(updateFigure(updatedFigure)); 
-            setSelectedFigure(updatedFigure);  
-        
-            setLastMouseX(mouseX);
-            setLastMouseY(mouseY); */
+      
 
 
             const updatedFigure = { 
@@ -378,6 +387,15 @@ const Canvas = () => {
                     ctx.lineTo(figure.coordX + base, figure.coordY + height);
                     ctx.closePath();
                 }
+                else if (figure.type === "frame") {
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(figure.coordX, figure.coordY, figure.width, figure.height);
+                    ctx.strokeStyle = "black";
+                    ctx.strokeRect(figure.coordX, figure.coordY, figure.width, figure.height);
+                    ctx.fillStyle = "black";
+                    ctx.font = "16px Arial";
+                    ctx.fillText("Frame 1", figure.coordX + 5, figure.coordY - 5);
+                }
                 ctx.stroke();
             });
 
@@ -420,6 +438,26 @@ console.log("SEl", selectedFigure)
         }
     }, [arrayOfFigures]);
     
+
+
+
+
+    const drawFrame = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
+        const { leftX, topY, width, height } = calculateBounds(startX, startY, x, y);
+        
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.fillStyle = "white";
+        ctx.fillRect(leftX, topY, width, height);
+        ctx.strokeStyle = "black";
+        ctx.strokeRect(leftX, topY, width, height);
+        
+        ctx.fillStyle = "black";
+        ctx.font = "16px Arial";
+        ctx.fillText("Frame 1", leftX + 5, topY - 5);
+    };
+
+
+
     return (
         <div className={styles.wrapper}>
             <canvas

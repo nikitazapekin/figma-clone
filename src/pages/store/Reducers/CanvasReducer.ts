@@ -31,27 +31,43 @@ interface LineObject {
   type: string,
   width:  number,
   height: number,
- // path: number[],
+ 
   path: Point[],
   strokeWidth: number,
   color: string,
 }
 
 
+interface FrameObject {
+ 
+  id: number;
+  coordX: number,
+  coordY: number,
+  type: string,
+  width: number,
+  height: number,
+  background: string
+}
+
+
 interface CanvasReducerTypes {
   arrayOfFigures: FigureObject[],
   arrayOfLines: LineObject[],
+  arrayOfFrames: FrameObject[],
   selectedOption: string,
   selectedOptionId: number,
   isOpenMenuToolbarList: boolean,
   isOpenLayoutPanel: boolean
-}
+}  
+
+
+
 const initialState: CanvasReducerTypes = {
   arrayOfFigures: [
-    { id: 1, coordX: 200, coordY: 200, type: "round", width: 200, height: 200 }
- //   {coordX: 200, coordY: 200, type: "round", width: 200, height: 200}
+ 
   ],
   arrayOfLines: [],
+  arrayOfFrames: [],
   selectedOption: "move",
   selectedOptionId: 0,
   isOpenMenuToolbarList: false,
@@ -74,6 +90,10 @@ const CanvasSlice = createSlice({
       state.arrayOfLines.push(action.payload)
 
     },
+    addFrame(state, action: PayloadAction<FrameObject>) {
+      state.arrayOfFrames.push(action.payload)
+
+    },
     updateFigure(state, action: PayloadAction<FigureObject>) {
       const index = state.arrayOfFigures.findIndex(fig => fig.id === action.payload.id);
       
@@ -93,6 +113,9 @@ const CanvasSlice = createSlice({
   },
 });
 
-export const { selectOption, addFigure, setOpenMenuToolbarList, setOpenLayotPanel, addLine, updateFigure } = CanvasSlice.actions;
+export const { selectOption, addFigure, setOpenMenuToolbarList, setOpenLayotPanel, addLine, updateFigure,
+addFrame
+
+ } = CanvasSlice.actions;
 export default CanvasSlice.reducer;
  
