@@ -5,51 +5,7 @@ import {
   PayloadAction
 } from '@reduxjs/toolkit';
  
-
-
-interface FigureObject {
- 
-  id: number;
-  coordX: number,
-  coordY: number,
-  type: string,
-  width: number,
-  height: number
-}
-
-interface Point {
-  x: number;
-  y: number;
-}
-
-interface LineObject {
- 
-  
-
-  coordX: number,
-  coordY: number,
-  type: string,
-  width:  number,
-  height: number,
- 
-  path: Point[],
-  strokeWidth: number,
-  color: string,
-}
-
-
-interface FrameObject {
- 
-  id: number;
-  coordX: number,
-  coordY: number,
-  type: string,
-  width: number,
-  height: number,
-  background: string
-}
-
-
+ import { FigureObject, LineObject, FrameObject } from './types';
 interface CanvasReducerTypes {
   arrayOfFigures: FigureObject[],
   arrayOfLines: LineObject[],

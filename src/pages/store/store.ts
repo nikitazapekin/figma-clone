@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import CanvasReducer from "@/pages/store/Reducers/CanvasReducer"
+import StylesReducer from "@/pages/store/Reducers/StylesReducer"
 const store = configureStore({
   reducer: {
 
- CanvasReducer: CanvasReducer
+ CanvasReducer: CanvasReducer,
+ StylesReducer: StylesReducer
   },
 });
 
