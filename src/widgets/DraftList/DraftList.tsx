@@ -21,7 +21,7 @@ const DraftList = ({ drafts }: DraftsProps) => {
                 <div className={styles.draft__container}>
                     <DraftListHeader />
                     <div className={styles.draft__cards}>
-                        {drafts.map((item) => (
+                        {drafts && drafts.map((item) => (
                             <DraftListItem
                                 item={item}
                                 key={item.ID}

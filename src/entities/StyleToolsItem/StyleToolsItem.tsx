@@ -1,8 +1,9 @@
 
 import { useState } from "react";
 import styles from "./StyleToolsItem.module.scss";
-import { setNewStyle } from "@/pages/store/Reducers/StylesReducer";
+import { setNewStyle } from "@/pages/store/Thunk/SetNewStyle";
 import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/pages/store/store";
 
 interface NestedItem {
     id: number;
@@ -28,19 +29,22 @@ interface StyleToolsItemProps {
 
 const StyleToolsItem = ({ item, type }: StyleToolsItemProps) => {
     const [isOpen, setIsOpen] = useState(false);
-const dispatch = useDispatch()
-    const handleChange =(e: React.ChangeEvent<HTMLInputElement>)=> {
-dispatch(setNewStyle({field: item.field}))
+    const dispatch = useDispatch<AppDispatch>()
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+       
+        dispatch(setNewStyle({ field: item.field, value: e.target.value }))
+       
     }
     return (
-        <> 
+        <>
             {item.type.includes(type) && (
                 <div className={styles.item}>
                     {!item.nested ? (
                         <div className={styles.singleItem}>
                             <h3 className={styles.item__title}>{item.title}</h3>
                             <input placeholder={item.placeholder} className={styles.item__input}
-                            onChange={(e)=>handleChange(e)}
+                                onChange={(e) => handleChange(e)}
+                                name={item.field}
                             />
                         </div>
                     ) : (
@@ -59,6 +63,7 @@ dispatch(setNewStyle({field: item.field}))
                                     <input
                                         placeholder={nested.placeholder}
                                         className={styles.item__input}
+                                        name={item.field}
                                     />
                                 </div>
                             ))}

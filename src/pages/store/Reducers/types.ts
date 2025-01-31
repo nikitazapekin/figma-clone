@@ -18,7 +18,7 @@ export interface FigureObject {
   export interface LineObject {
    
     
-  
+  id: number,
     coordX: number,
     coordY: number,
     type: string,

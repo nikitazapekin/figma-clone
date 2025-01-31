@@ -12,16 +12,6 @@ interface Point {
     x: number;
     y: number;
 }
-
-interface FigureObject {
-    id: number;
-    coordX: number;
-    coordY: number;
-    type: string;
-    width: number;
-    height: number;
-}
-
 const Canvas = () => {
     const dispatch = useDispatch();
     const arrayOfFigures = useSelector(CanvasArrayOfFiguresSelector);
@@ -224,6 +214,7 @@ const Canvas = () => {
 
             dispatch(
                 addLine({
+                    id: arrayOfLines.length+1,
                     coordX: minX,
                     coordY: minY,
                     type: "pencil",

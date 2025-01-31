@@ -56,6 +56,9 @@ const CanvasSlice = createSlice({
       if (index !== -1) {
         state.arrayOfFigures[index] = action.payload;
       }
+
+
+      console.log(state.arrayOfFigures)
     },
     
     setOpenMenuToolbarList(state) {
