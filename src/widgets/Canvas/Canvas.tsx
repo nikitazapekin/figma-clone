@@ -199,11 +199,17 @@ const Canvas = () => {
                 type: selectedOption,
                 width,
                 height,
+                bordred: 0,
+                opacity: 1,
+                stroke: 0,
+                strokeColor: "#000",
+                shadowColor: "#000",
+                shadowX: 0,
+                shadowY: 0,
+                background: "#fff"
             })
         );
-
-
-
+ 
 
         if (selectedOption === "pencil" && path.length > 1) {
 
@@ -339,6 +345,76 @@ const Canvas = () => {
 
     };
 
+/* 
+
+
+    useEffect(() => {
+        const ctx = ctxRef.current;
+        if (ctx) {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.save();
+            ctx.translate(offsetX, offsetY);
+    
+            arrayOfFigures.forEach(figure => {
+                ctx.beginPath();
+           //     ctx.globalAlpha = figure.opacity;
+                 ctx.shadowColor = figure.shadowColor;
+                ctx.shadowOffsetX = figure.shadowX;
+                ctx.shadowOffsetY = figure.shadowY;
+             //   ctx.lineWidth = figure.stroke;
+                ctx.strokeStyle = figure.strokeColor; 
+           //     ctx.fillStyle = figure.background || "transparent";
+                
+                if (figure.type === "square") {
+                    ctx.rect(figure.coordX, figure.coordY, figure.width, figure.height);
+                } else if (figure.type === "round") {
+                    const radius = Math.max(figure.width, figure.height) / 2;
+                    ctx.arc(
+                        figure.coordX + figure.width / 2,
+                        figure.coordY + figure.height / 2,
+                        radius,
+                        0,
+                        2 * Math.PI
+                    );
+                } else if (figure.type === "triangle") {
+                    const base = figure.width;
+                    const height = figure.height;
+                    ctx.moveTo(figure.coordX + base / 2, figure.coordY);
+                    ctx.lineTo(figure.coordX, figure.coordY + height);
+                    ctx.lineTo(figure.coordX + base, figure.coordY + height);
+                    ctx.closePath();
+                } else if (figure.type === "frame") {
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(figure.coordX, figure.coordY, figure.width, figure.height);
+                    ctx.strokeStyle = "black";
+                    ctx.strokeRect(figure.coordX, figure.coordY, figure.width, figure.height);
+                    ctx.fillStyle = "black";
+                    ctx.font = "16px Arial";
+                    ctx.fillText("Frame 1", figure.coordX + 5, figure.coordY - 5);
+                }
+                
+                if (figure.background) ctx.fill();
+                if (figure.stroke > 0) ctx.stroke();
+            });
+    
+            arrayOfLines.forEach(line => {
+                ctx.beginPath();
+                ctx.strokeStyle = line.color;
+                ctx.lineWidth = line.strokeWidth;
+                line.path.forEach((point, index) => {
+                    if (index === 0) {
+                        ctx.moveTo(point.x, point.y);
+                    } else {
+                        ctx.lineTo(point.x, point.y);
+                    }
+                });
+                ctx.stroke();
+            });
+            ctx.restore();
+        }
+    }, [arrayOfFigures, arrayOfLines, offsetX, offsetY, selectedFigure]);
+ 
+ */
 
 
 
@@ -350,6 +426,18 @@ const Canvas = () => {
             ctx.translate(offsetX, offsetY);
             arrayOfFigures.forEach(figure => {
                 ctx.beginPath();
+                ctx.globalAlpha = figure.opacity;
+
+
+                ctx.shadowColor = figure.shadowColor;
+                ctx.shadowOffsetX = figure.shadowX;
+                ctx.shadowOffsetY = figure.shadowY;
+               ctx.lineWidth = figure.stroke;
+                ctx.strokeStyle = figure.strokeColor; 
+                ctx.fillStyle = figure.background || "transparent";
+
+
+
                 if (figure.type === "square") {
                     ctx.strokeRect(figure.coordX, figure.coordY, figure.width, figure.height);
                 } else if (figure.type === "round") {
@@ -396,8 +484,8 @@ const Canvas = () => {
             });
             ctx.restore();
         }
-    }, [arrayOfFigures, arrayOfLines, offsetX, offsetY, selectedFigure]);
-
+    }, [arrayOfFigures, arrayOfLines, offsetX, offsetY, selectedFigure]); 
+ 
     const handleTextSubmit = () => {
         if (text.trim() && textPosition) {
 

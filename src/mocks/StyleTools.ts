@@ -41,6 +41,24 @@ export const styleTools = [
 
     },
     {
+        id: 21,
+        title: "Width",
+        value: "0",
+        placeholder: "0px",
+        field: "width",
+        type: ["round", "triangle", "square",]  
+
+    },
+    {
+        id: 22,
+        title: "Height",
+        value: "0",
+        placeholder: "0px",
+        field: "height",
+        type: ["round", "triangle", "square",]  
+
+    },
+    {
         id: 5,
         title: "Background",
         value: "",
@@ -115,7 +133,27 @@ export const styleTools = [
         value: "0",
         placeholder: "20px",
         field: "stroke",
-        type: ["round", "triangle", "square", "line", "text"]
+        type: ["round", "triangle", "square", "line", "text"],
+        nested: [
+            {
+                id: 19,
+                title: "Stroke width",
+                value: "0",
+                placeholder: "0px",
+                field: "stroke",
+                type: ["round", "triangle", "square", "line", "text"]
+
+            },
+            {
+                id: 20,
+                title: "Stroke color",
+                value: "0",
+                placeholder: "#fff",
+                field: "strokeColor",
+                type: ["round", "triangle", "square", "line", "text"]
+
+            },
+        ]
 
     },
     {
@@ -131,7 +169,7 @@ export const styleTools = [
                 title: "CoordX",
                 value: "0",
                 placeholder: "X coordinate",
-                field: "coordX",
+                field: "shadowX",
                 type: ["round", "triangle", "square", "line", "text"]
 
             },
@@ -140,10 +178,35 @@ export const styleTools = [
                 title: "CoordY",
                 value: "0",
                 placeholder: "Y coordinate",
-                field: "coordY",
+                field: "shadowY",
+                type: ["round", "triangle", "square", "line", "text"]
+
+            },
+
+            {
+                id: 13,
+                title: "Shadow color",
+                value: "0",
+                placeholder: "#fff",
+                field: "shadowColor",
                 type: ["round", "triangle", "square", "line", "text"]
 
             }
         ]
     }
 ]
+
+/*
+ width: number,
+    height: number,
+
+    opacity: number,
+    bordred: number,
+    background: string, 
+
+    stroke: number, 
+    strokeColor: string,
+    shadowColor: string, 
+    shadowX: number, 
+    shadowY: number
+    */

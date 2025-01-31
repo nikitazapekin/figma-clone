@@ -7,7 +7,17 @@ export interface FigureObject {
     coordY: number,
     type: string,
     width: number,
-    height: number
+    height: number,
+
+    opacity: number,
+    bordred: number,
+    background: string, 
+
+    stroke: number, 
+    strokeColor: string,
+    shadowColor: string, 
+    shadowX: number, 
+    shadowY: number
   }
   
   interface Point {
