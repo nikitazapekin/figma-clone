@@ -1,59 +1,74 @@
-import styles from "./StyleToolsItem.module.scss"
+
+import { useState } from "react";
+import styles from "./StyleToolsItem.module.scss";
+import { setNewStyle } from "@/pages/store/Reducers/StylesReducer";
+import { useDispatch } from "react-redux";
+
+interface NestedItem {
+    id: number;
+    title: string;
+    value: string;
+    placeholder: string;
+    type: String[]
+    field: string
+}
+
 interface StyleToolsItemProps {
     item: {
-
-        id: number,
-        title: string,
-        value: string,
-        nested?: {
-            id: number,
-            title: string,
-            value: string,
-        }[]
-    }
+        id: number;
+        title: string;
+        value: string;
+        placeholder: string;
+        type: String[]
+        nested?: NestedItem[];
+        field: string
+    },
+    type: string
 }
-const StyleToolsItem = ({ item }: StyleToolsItemProps) => {
+
+const StyleToolsItem = ({ item, type }: StyleToolsItemProps) => {
+    const [isOpen, setIsOpen] = useState(false);
+const dispatch = useDispatch()
+    const handleChange =(e: React.ChangeEvent<HTMLInputElement>)=> {
+dispatch(setNewStyle({field: item.field}))
+    }
     return (
-
-        <>
-            {!item.nested ? (
+        <> 
+            {item.type.includes(type) && (
                 <div className={styles.item}>
-                    <h3 className={styles.title}>
-                        {item.title}
-                    </h3>
-                    <input
-
-                    />
-
-
+                    {!item.nested ? (
+                        <div className={styles.singleItem}>
+                            <h3 className={styles.item__title}>{item.title}</h3>
+                            <input placeholder={item.placeholder} className={styles.item__input}
+                            onChange={(e)=>handleChange(e)}
+                            />
+                        </div>
+                    ) : (
+                        <details
+                            className={styles.item__details}
+                            open={isOpen}
+                            onClick={() => setIsOpen(!isOpen)}
+                        >
+                            <summary className={styles.item__summary}>
+                                {item.title}
+                                {isOpen ? "▲" : "▼"}
+                            </summary>
+                            {item.nested.map((nested) => (
+                                <div key={nested.id} className={styles.nestedItem}>
+                                    <h3 className={styles.item__title}>{nested.title}</h3>
+                                    <input
+                                        placeholder={nested.placeholder}
+                                        className={styles.item__input}
+                                    />
+                                </div>
+                            ))}
+                        </details>
+                    )}
                 </div>
-
-            ) : (
-                <summary>
-                    {item.title}
-                    <details>
-                        {
-                        item.nested.map(nested => (
-                            <>
-                                <h3 className={styles.title}>
-                                    {nested.title}
-                                </h3>
-                                <input
-
-                                />
-                            </>
-                        ))
-                    }
-
-                    </details>
-                </summary>
-
             )
             }
-
         </>
-
     );
-}
+};
 
 export default StyleToolsItem;
