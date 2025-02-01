@@ -8,6 +8,8 @@ import LayoutPanel from "../LayoutPanel/LayoutPanel";
 import { isSelectedElementSelector } from "@/pages/store/Selectors/StylesSelector";
 import { setSelectedElement } from "@/pages/store/Reducers/StylesReducer";
 import StyleTools from "@/features/StyleTools/StyleTools";
+import ScaleComponent from "@/features/ScaleComponent/ScaleComponent";
+import { ScaleSelector } from "@/pages/store/Selectors/SizeReducer";
 interface Point {
     x: number;
     y: number;
@@ -38,6 +40,8 @@ const Canvas = () => {
 
 
     const { isSelected, element } = useSelector(isSelectedElementSelector)
+    const scale = useSelector(ScaleSelector)
+   // const [zoom, setZoom] = useState(1);
     const updateCanvasSize = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -48,6 +52,10 @@ const Canvas = () => {
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
         ctx.putImageData(imageData, 0, 0);
+      //  ctx.scale(scale, scale); 
+   //   ctx.scale(zoom * scale, zoom * scale);
+  /*  ctx.setTransform(zoom * scale, 0, 0, zoom * scale, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height); */
     };
 
     useEffect(() => {
@@ -69,8 +77,8 @@ const Canvas = () => {
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("keyup", handleKeyUp);
         };
-    }, []);
-
+    }, [scale ]);
+ 
     useEffect(() => {
         const canvas = canvasRef.current;
         if (canvas) {
@@ -253,8 +261,8 @@ const Canvas = () => {
         }
 
 
+        setSelectedFigure(null)
 
-     
     };
 
     const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -345,7 +353,7 @@ const Canvas = () => {
 
     };
 
- 
+
     function drawRoundedTriangle(
         ctx: CanvasRenderingContext2D,
         x: number,
@@ -361,118 +369,98 @@ const Canvas = () => {
                 p1[1] * (1 - t) + p2[1] * t
             ];
         }
-    
+
         ctx.save();
         ctx.translate(x, y);
         ctx.beginPath();
-     
-        const p1: [number, number] = [width / 2, 0];     
-        const p2: [number, number] = [0, height];      
-        const p3: [number, number] = [width, height];    
-    
-       
+
+        const p1: [number, number] = [width / 2, 0];
+        const p2: [number, number] = [0, height];
+        const p3: [number, number] = [width, height];
+
+
         const radius = Math.min(borderRadius, width / 4, height / 4);
-    
-       
-        const q1 = lerp(p1, p2, radius / width); 
-        const q2 = lerp(p1, p3, radius / width);   
-        const q3 = lerp(p2, p3, radius / height); 
-    
-     
-        ctx.moveTo(q1[0], q1[1]);                         
-        ctx.quadraticCurveTo(p1[0], p1[1], q2[0], q2[1]) 
-     
-        ctx.lineTo(p3[0], p3[1]);                       
-        ctx.quadraticCurveTo(p3[0], p3[1], q3[0], q3[1]);  
-     
-        ctx.lineTo(q1[0], q1[1]);                        
-        ctx.quadraticCurveTo(p2[0], p2[1], q1[0], q1[1]);  
-    
+
+
+        const q1 = lerp(p1, p2, radius / width);
+        const q2 = lerp(p1, p3, radius / width);
+        const q3 = lerp(p2, p3, radius / height);
+
+
+        ctx.moveTo(q1[0], q1[1]);
+        ctx.quadraticCurveTo(p1[0], p1[1], q2[0], q2[1])
+
+        ctx.lineTo(p3[0], p3[1]);
+        ctx.quadraticCurveTo(p3[0], p3[1], q3[0], q3[1]);
+
+        ctx.lineTo(q1[0], q1[1]);
+        ctx.quadraticCurveTo(p2[0], p2[1], q1[0], q1[1]);
+
         ctx.closePath();
         ctx.fillStyle = color;
         ctx.fill();
         ctx.stroke();
         ctx.restore();
     }
-    
+
     useEffect(() => {
         const ctx = ctxRef.current;
         if (ctx) {
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
             ctx.save();
             ctx.translate(offsetX, offsetY);
-    
             arrayOfFigures.forEach(figure => {
                 ctx.beginPath();
                 ctx.globalAlpha = figure.opacity;
-    
+
                 ctx.shadowColor = figure.shadowColor;
+ 
                 ctx.shadowOffsetX = figure.shadowX;
                 ctx.shadowOffsetY = figure.shadowY;
                 ctx.lineWidth = figure.stroke;
                 ctx.strokeStyle = figure.strokeColor;
                 ctx.fillStyle = figure.background || "#fff";
-    
                 if (figure.type === "square") {
-                   
+
                     ctx.roundRect(
-                        figure.coordX, 
-                        figure.coordY, 
-                        figure.width, 
-                        figure.height, 
+                        figure.coordX,
+                        figure.coordY,
+                        figure.width,
+                        figure.height,
                         figure.border
                     );
                 } else if (figure.type === "round") {
-                 
-                    const radius = Math.max(figure.width, figure.height) / 2 - figure.border / 2;
+                    const radius = Math.max(figure.width, figure.height) / 2;
                     ctx.arc(
-                        figure.coordX + figure.width / 2, 
-                        figure.coordY + figure.height / 2, 
-                        Math.max(0, radius), 
-                        0, 
+                        figure.coordX + figure.width / 2,
+                        figure.coordY + figure.height / 2,
+                        radius,
+                        0,
                         2 * Math.PI
                     );
                 } else if (figure.type === "triangle") {
-
-                    drawRoundedTriangle(
-                        ctx, 
-                        figure.coordX, 
-                        figure.coordY, 
-                        figure.width, 
-                        figure.height, 
-                        figure.border, 
-                        figure.background || "#fff"
-                    );
-             
-                } else if (figure.type === "frame") {
-                    // Рамка с учетом border
+                    const base = figure.width;
+                    const height = figure.height;
+                    ctx.moveTo(figure.coordX + base / 2, figure.coordY);
+                    ctx.lineTo(figure.coordX, figure.coordY + height);
+                    ctx.lineTo(figure.coordX + base, figure.coordY + height);
+                    ctx.closePath();
+                }
+                else if (figure.type === "frame") {
                     ctx.fillStyle = "white";
-                    ctx.fillRect(
-                        figure.coordX + figure.border, 
-                        figure.coordY + figure.border, 
-                        figure.width - 2 * figure.border, 
-                        figure.height - 2 * figure.border
-                    );
+                    ctx.fillRect(figure.coordX, figure.coordY, figure.width, figure.height);
                     ctx.strokeStyle = "black";
-                    ctx.strokeRect(
-                        figure.coordX + figure.border, 
-                        figure.coordY + figure.border, 
-                        figure.width - 2 * figure.border, 
-                        figure.height - 2 * figure.border
-                    );
+                    ctx.strokeRect(figure.coordX, figure.coordY, figure.width, figure.height);
                     ctx.fillStyle = "black";
                     ctx.font = "16px Arial";
-                    ctx.fillText(
-                        "Frame 1",
-                        figure.coordX + 5 + figure.border, 
-                        figure.coordY - 5 + figure.border
-                    );
+                    ctx.fillText("Frame 1", figure.coordX + 5, figure.coordY - 5);
                 }
-    
+
+
                 ctx.fill();
                 ctx.stroke();
             });
-    
+
             arrayOfLines.forEach(line => {
                 ctx.beginPath();
                 ctx.strokeStyle = line.color;
@@ -486,13 +474,10 @@ const Canvas = () => {
                 });
                 ctx.stroke();
             });
-    
             ctx.restore();
         }
     }, [arrayOfFigures, arrayOfLines, offsetX, offsetY, selectedFigure]);
 
-    
-    
     const handleTextSubmit = () => {
         if (text.trim() && textPosition) {
 
@@ -537,13 +522,13 @@ const Canvas = () => {
     };
 
 
-
+   
     return (
         <div className={styles.wrapper}>
             <canvas
                 ref={canvasRef}
                 className={styles.canvas}
-                style={{ border: "1px solid blue" }}
+
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
@@ -567,6 +552,7 @@ const Canvas = () => {
             )}
             <CanvasTools />
             <LayoutPanel />
+            <ScaleComponent />
             {isSelected && (
                 <StyleTools
                     type={element?.type}

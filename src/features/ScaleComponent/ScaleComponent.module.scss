@@ -1,0 +1,15 @@
+@use "../../app/theme/theme.scss" as *;
+.scale {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 111;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    background-color: $white;
+    padding: 10px;
+    display: flex;
+    border-radius: 10px;
+    column-gap: 20px;
+}
