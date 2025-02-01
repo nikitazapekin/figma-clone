@@ -73,7 +73,7 @@ export const styleTools = [
                 title: "Color",
                 value: "",
                 placeholder: "#fff",
-                field: "color",
+                field: "background",
                 type: ["round", "triangle", "square", "line", "text"]
 
 

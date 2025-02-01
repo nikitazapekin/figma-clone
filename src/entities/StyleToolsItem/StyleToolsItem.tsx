@@ -32,7 +32,7 @@ const StyleToolsItem = ({ item, type }: StyleToolsItemProps) => {
     const dispatch = useDispatch<AppDispatch>()
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
        
-        dispatch(setNewStyle({ field: item.field, value: e.target.value }))
+        dispatch(setNewStyle({ field: e.target.name , value: e.target.value }))
        
     }
     return (
@@ -64,8 +64,11 @@ const StyleToolsItem = ({ item, type }: StyleToolsItemProps) => {
                                         placeholder={nested.placeholder}
                                         className={styles.item__input}
                                         onChange={(e) => handleChange(e)}
-                                        name={item.field}
+                                        name={nested.field}
                                     />
+
+
+                                    {nested.field}
                                 </div>
                             ))}
                         </details>
