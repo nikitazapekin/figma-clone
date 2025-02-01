@@ -63,6 +63,7 @@ const StyleToolsItem = ({ item, type }: StyleToolsItemProps) => {
                                     <input
                                         placeholder={nested.placeholder}
                                         className={styles.item__input}
+                                        onChange={(e) => handleChange(e)}
                                         name={item.field}
                                     />
                                 </div>
