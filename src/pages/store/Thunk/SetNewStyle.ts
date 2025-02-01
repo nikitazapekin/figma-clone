@@ -19,12 +19,11 @@ export const setNewStyle = ({ field, value }: StyleList) =>
     const selectedElement = state.StylesReducer.selectedElement;
 
     if (!selectedElement || Object.keys(selectedElement).length === 0) {
-        console.warn("Нет выбранного элемента или он пустой");
         return;
     }
 
     console.log("selectedElement:", selectedElement);
-
+console.log("field", field, ":", value)
     const updatedElement = {
         ...selectedElement,
         [field]: value,  

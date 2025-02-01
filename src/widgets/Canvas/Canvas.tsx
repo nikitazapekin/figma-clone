@@ -199,7 +199,7 @@ const Canvas = () => {
                 type: selectedOption,
                 width,
                 height,
-                bordred: 0,
+                border: 0,
                 opacity: 1,
                 stroke: 0,
                 strokeColor: "#000",
@@ -209,7 +209,7 @@ const Canvas = () => {
                 background: "#fff"
             })
         );
- 
+
 
         if (selectedOption === "pencil" && path.length > 1) {
 
@@ -220,7 +220,7 @@ const Canvas = () => {
 
             dispatch(
                 addLine({
-                    id: arrayOfLines.length+1,
+                    id: arrayOfLines.length + 1,
                     coordX: minX,
                     coordY: minY,
                     type: "pencil",
@@ -345,8 +345,79 @@ const Canvas = () => {
 
     };
 
-/* 
 
+    /* 
+        useEffect(() => { 
+            const ctx = ctxRef.current;
+            if (ctx) {
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.save();
+                ctx.translate(offsetX, offsetY);
+        
+                arrayOfFigures.forEach(figure => {
+                    ctx.beginPath();
+                    ctx.globalAlpha = figure.opacity;
+        
+                    ctx.shadowColor = figure.shadowColor;
+                    ctx.shadowOffsetX = figure.shadowX;
+                    ctx.shadowOffsetY = figure.shadowY;
+                    ctx.lineWidth = figure.stroke;
+                    ctx.strokeStyle = figure.strokeColor; 
+        
+    
+        ctx.fillStyle = figure.background || "#fff"
+                    if (figure.type === "square") {
+                        ctx.rect(figure.coordX, figure.coordY, figure.width, figure.height);  
+                    } else if (figure.type === "round") {
+                        const radius = Math.max(figure.width, figure.height) / 2;
+                        ctx.arc(
+                            figure.coordX + figure.width / 2,
+                            figure.coordY + figure.height / 2,
+                            radius,
+                            0,
+                            2 * Math.PI
+                        );
+                    } else if (figure.type === "triangle") {
+                        const base = figure.width;
+                        const height = figure.height;
+                        ctx.moveTo(figure.coordX + base / 2, figure.coordY);
+                        ctx.lineTo(figure.coordX, figure.coordY + height);
+                        ctx.lineTo(figure.coordX + base, figure.coordY + height);
+                        ctx.closePath(); // Закрытие пути для треугольника
+                    }
+                    else if (figure.type === "frame") {
+                        ctx.fillStyle = "white";
+                        ctx.fillRect(figure.coordX, figure.coordY, figure.width, figure.height);
+                        ctx.strokeStyle = "black";
+                        ctx.strokeRect(figure.coordX, figure.coordY, figure.width, figure.height);
+                        ctx.fillStyle = "black";
+                        ctx.font = "16px Arial";
+                        ctx.fillText("Frame 1", figure.coordX + 5, figure.coordY - 5);
+                    }
+        
+                    // Заливка фигуры после рисования пути
+                    ctx.fill();
+                    ctx.stroke();
+                });
+        
+                arrayOfLines.forEach(line => {
+                    ctx.beginPath();
+                    ctx.strokeStyle = line.color;
+                    ctx.lineWidth = line.strokeWidth;
+                    line.path.forEach((point, index) => {
+                        if (index === 0) {
+                            ctx.moveTo(point.x, point.y);
+                        } else {
+                            ctx.lineTo(point.x, point.y);
+                        }
+                    });
+                    ctx.stroke();
+                });
+                
+                ctx.restore();
+            }
+        }, [arrayOfFigures, arrayOfLines, offsetX, offsetY, selectedFigure]);
+     */
 
     useEffect(() => {
         const ctx = ctxRef.current;
@@ -354,28 +425,40 @@ const Canvas = () => {
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
             ctx.save();
             ctx.translate(offsetX, offsetY);
-    
+
             arrayOfFigures.forEach(figure => {
                 ctx.beginPath();
-           //     ctx.globalAlpha = figure.opacity;
-                 ctx.shadowColor = figure.shadowColor;
+                ctx.globalAlpha = figure.opacity;
+
+                ctx.shadowColor = figure.shadowColor;
                 ctx.shadowOffsetX = figure.shadowX;
                 ctx.shadowOffsetY = figure.shadowY;
-             //   ctx.lineWidth = figure.stroke;
-                ctx.strokeStyle = figure.strokeColor; 
-           //     ctx.fillStyle = figure.background || "transparent";
-                
+                ctx.lineWidth = figure.stroke;
+                ctx.strokeStyle = figure.strokeColor;
+
+                ctx.fillStyle = figure.background || "#fff";
                 if (figure.type === "square") {
-                    ctx.rect(figure.coordX, figure.coordY, figure.width, figure.height);
-                } else if (figure.type === "round") {
+                 //  ctx.rect(figure.coordX, figure.coordY, figure.width, figure.height);
+
+                  //  ctx.beginPath();
+                  //  ctx.roundRect(400, 20, 200, 100, [figure.border, figure.border, figure.border, figure.border]);
+                 //   ctx.stroke();
+                 ctx.roundRect(
+                    figure.coordX, 
+                    figure.coordY, 
+                    figure.width, 
+                    figure.height, 
+                    figure.border
+                );
+            
+                }
+
+
+                else if (figure.type === "round") {
                     const radius = Math.max(figure.width, figure.height) / 2;
-                    ctx.arc(
-                        figure.coordX + figure.width / 2,
-                        figure.coordY + figure.height / 2,
-                        radius,
-                        0,
-                        2 * Math.PI
-                    );
+                    const centerX = figure.coordX + figure.width / 2;
+                    const centerY = figure.coordY + figure.height / 2;
+                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
                 } else if (figure.type === "triangle") {
                     const base = figure.width;
                     const height = figure.height;
@@ -392,11 +475,11 @@ const Canvas = () => {
                     ctx.font = "16px Arial";
                     ctx.fillText("Frame 1", figure.coordX + 5, figure.coordY - 5);
                 }
-                
-                if (figure.background) ctx.fill();
-                if (figure.stroke > 0) ctx.stroke();
+           //     ctx.arc(figure.coordX, figure.coordY, figure.border, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
             });
-    
+
             arrayOfLines.forEach(line => {
                 ctx.beginPath();
                 ctx.strokeStyle = line.color;
@@ -410,82 +493,13 @@ const Canvas = () => {
                 });
                 ctx.stroke();
             });
+
             ctx.restore();
         }
     }, [arrayOfFigures, arrayOfLines, offsetX, offsetY, selectedFigure]);
- 
- */
 
 
 
-    useEffect(() => {
-        const ctx = ctxRef.current;
-        if (ctx) {
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            ctx.save();
-            ctx.translate(offsetX, offsetY);
-            arrayOfFigures.forEach(figure => {
-                ctx.beginPath();
-                ctx.globalAlpha = figure.opacity;
-
-
-                ctx.shadowColor = figure.shadowColor;
-                ctx.shadowOffsetX = figure.shadowX;
-                ctx.shadowOffsetY = figure.shadowY;
-               ctx.lineWidth = figure.stroke;
-                ctx.strokeStyle = figure.strokeColor; 
-                ctx.fillStyle = figure.background || "transparent";
-
-
-
-                if (figure.type === "square") {
-                    ctx.strokeRect(figure.coordX, figure.coordY, figure.width, figure.height);
-                } else if (figure.type === "round") {
-                    const radius = Math.max(figure.width, figure.height) / 2;
-                    ctx.arc(
-                        figure.coordX + figure.width / 2,
-                        figure.coordY + figure.height / 2,
-                        radius,
-                        0,
-                        2 * Math.PI
-                    );
-                } else if (figure.type === "triangle") {
-                    const base = figure.width;
-                    const height = figure.height;
-                    ctx.moveTo(figure.coordX + base / 2, figure.coordY);
-                    ctx.lineTo(figure.coordX, figure.coordY + height);
-                    ctx.lineTo(figure.coordX + base, figure.coordY + height);
-                    ctx.closePath();
-                }
-                else if (figure.type === "frame") {
-                    ctx.fillStyle = "white";
-                    ctx.fillRect(figure.coordX, figure.coordY, figure.width, figure.height);
-                    ctx.strokeStyle = "black";
-                    ctx.strokeRect(figure.coordX, figure.coordY, figure.width, figure.height);
-                    ctx.fillStyle = "black";
-                    ctx.font = "16px Arial";
-                    ctx.fillText("Frame 1", figure.coordX + 5, figure.coordY - 5);
-                }
-                ctx.stroke();
-            });
-
-            arrayOfLines.forEach(line => {
-                ctx.beginPath();
-                ctx.strokeStyle = line.color;
-                ctx.lineWidth = line.strokeWidth;
-                line.path.forEach((point, index) => {
-                    if (index === 0) {
-                        ctx.moveTo(point.x, point.y);
-                    } else {
-                        ctx.lineTo(point.x, point.y);
-                    }
-                });
-                ctx.stroke();
-            });
-            ctx.restore();
-        }
-    }, [arrayOfFigures, arrayOfLines, offsetX, offsetY, selectedFigure]); 
- 
     const handleTextSubmit = () => {
         if (text.trim() && textPosition) {
 
@@ -495,7 +509,7 @@ const Canvas = () => {
     };
 
     useEffect(() => {
-        if(selectedFigure) {
+        if (selectedFigure) {
 
             dispatch(setSelectedElement(selectedFigure))
         }

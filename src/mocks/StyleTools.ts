@@ -184,7 +184,7 @@ export const styleTools = [
             },
 
             {
-                id: 13,
+                id: 31,
                 title: "Shadow color",
                 value: "0",
                 placeholder: "#fff",

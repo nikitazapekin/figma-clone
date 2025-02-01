@@ -10,7 +10,7 @@ export interface FigureObject {
     height: number,
 
     opacity: number,
-    bordred: number,
+    border: number,
     background: string, 
 
     stroke: number, 
