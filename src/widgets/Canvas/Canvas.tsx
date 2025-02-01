@@ -10,6 +10,11 @@ import { setSelectedElement } from "@/pages/store/Reducers/StylesReducer";
 import StyleTools from "@/features/StyleTools/StyleTools";
 import ScaleComponent from "@/features/ScaleComponent/ScaleComponent";
 import { ScaleSelector } from "@/pages/store/Selectors/SizeReducer";
+import { calculateBounds } from "@/helpers/CalculateBounds";
+import { drawSquare } from "@/helpers/DrawSquare";
+import { drawCircle } from "@/helpers/DrawCircle";
+import { drawTriangle } from "@/helpers/DrawTriangle";
+import { drawFrame } from "@/helpers/DrawFrame";
 interface Point {
     x: number;
     y: number;
@@ -41,7 +46,7 @@ const Canvas = () => {
 
     const { isSelected, element } = useSelector(isSelectedElementSelector)
     const scale = useSelector(ScaleSelector)
-   // const [zoom, setZoom] = useState(1);
+
     const updateCanvasSize = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -52,10 +57,7 @@ const Canvas = () => {
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
         ctx.putImageData(imageData, 0, 0);
-      //  ctx.scale(scale, scale); 
-   //   ctx.scale(zoom * scale, zoom * scale);
-  /*  ctx.setTransform(zoom * scale, 0, 0, zoom * scale, 0, 0);
-      ctx.clearRect(0, 0, canvas.width, canvas.height); */
+     
     };
 
     useEffect(() => {
@@ -68,10 +70,8 @@ const Canvas = () => {
         const handleKeyUp = (e: KeyboardEvent) => {
             if (e.key === "Shift") setIsShiftPressed(false);
         };
-
         window.addEventListener("keydown", handleKeyDown);
         window.addEventListener("keyup", handleKeyUp);
-
         return () => {
             window.removeEventListener("resize", updateCanvasSize);
             window.removeEventListener("keydown", handleKeyDown);
@@ -86,52 +86,7 @@ const Canvas = () => {
         }
     }, []);
 
-    const calculateBounds = (x1: number, y1: number, x2: number, y2: number) => {
-        const leftX = Math.min(x1, x2);
-        const topY = Math.min(y1, y2);
-        const width = Math.abs(x2 - x1);
-        const height = Math.abs(y2 - y1);
-        return { leftX, topY, width, height };
-    };
-
-    const drawSquare = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
-        const { leftX, topY, width, height } = calculateBounds(startX, startY, x, y);
-        const size = isShiftPressed ? Math.min(width, height) : width;
-
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.strokeRect(leftX, topY, size, size);
-    };
-
-    const drawCircle = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
-        const { leftX, topY, width, height } = calculateBounds(startX, startY, x, y);
-        const radius = isShiftPressed
-            ? Math.min(width, height) / 2
-            : Math.sqrt(width ** 2 + height ** 2) / 2;
-
-        const centerX = leftX + width / 2;
-        const centerY = topY + height / 2;
-
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.stroke();
-    };
-
-    const drawTriangle = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
-        const { leftX, topY, width, height } = calculateBounds(startX, startY, x, y);
-
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.beginPath();
-        ctx.moveTo(leftX + width / 2, topY);
-        ctx.lineTo(leftX, topY + height);
-        ctx.lineTo(leftX + width, topY + height);
-        ctx.closePath();
-        ctx.stroke();
-    };
-
     const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-
         const canvas = canvasRef.current;
         if (!canvas) return;
         const rect = canvas.getBoundingClientRect();
@@ -148,8 +103,6 @@ const Canvas = () => {
             setIsDown(true);
             return;
         }
-
-
         if (selectedOption === "move") {
             const foundFigure = arrayOfFigures.find(
                 (fig) =>
@@ -164,11 +117,8 @@ const Canvas = () => {
             }
             return;
         }
-
         const ctx = ctxRef.current;
         setPath([{ x, y }]);
-
-
         if (ctx && selectedOption === "pencil") {
             ctx.beginPath();
             ctx.moveTo(x, y);
@@ -217,15 +167,11 @@ const Canvas = () => {
                 background: "#fff"
             })
         );
-
-
         if (selectedOption === "pencil" && path.length > 1) {
-
             const minX = Math.min(...path.map(p => p.x));
             const minY = Math.min(...path.map(p => p.y));
             const maxX = Math.max(...path.map(p => p.x));
             const maxY = Math.max(...path.map(p => p.y));
-
             dispatch(
                 addLine({
                     id: arrayOfLines.length + 1,
@@ -240,12 +186,7 @@ const Canvas = () => {
                     color: "black",
                 })
             );
-
-
         }
-
-
-
         if (selectedOption === "frame") {
             dispatch(
                 addFrame({
@@ -259,19 +200,12 @@ const Canvas = () => {
                 })
             );
         }
-
-
         setSelectedFigure(null)
-
     };
-
     const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
         const canvas = canvasRef.current;
         if (!canvas) return;
         if (!isDown) return;
-
-
-
         if (selectedOption === "hand") {
             const dx = e.clientX - lastMouseX;
             const dy = e.clientY - lastMouseY;
@@ -281,12 +215,9 @@ const Canvas = () => {
             setLastMouseY(e.clientY);
             return;
         }
-
         const rect = canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
-
-
         const deltaX = mouseX - lastMouseX;
         const deltaY = mouseY - lastMouseY;
         const newFigure = { ...selectedFigure };
@@ -294,32 +225,26 @@ const Canvas = () => {
         newFigure.coordY += deltaY;
         newFigure.right = newFigure.coordX + newFigure.width;
         newFigure.bottom = newFigure.coordY + newFigure.height;
-
         dispatch(updateFigure(newFigure));
-
         setLastMouseX(mouseX);
         setLastMouseY(mouseY);
         const ctx = ctxRef.current;
         if (!ctx) return;
-
-
         if (canvasImageData) {
             ctx.putImageData(canvasImageData, 0, 0);
         }
-
         switch (selectedOption) {
             case "square":
-                drawSquare(ctx, mouseX, mouseY);
+                drawSquare(ctx, mouseX, mouseY, isShiftPressed, startX, startY)
                 break;
             case "round":
-                drawCircle(ctx, mouseX, mouseY);
+               drawCircle(ctx, mouseX, mouseY, isShiftPressed, startX, startY)
                 break;
             case "triangle":
-                drawTriangle(ctx, mouseX, mouseY);
+             drawTriangle(ctx, mouseX, mouseY, startX, startY)
                 break;
-
             case "frame":
-                drawFrame(ctx, mouseX, mouseY);
+                drawFrame(ctx, mouseX, mouseY, startX, startY);
             default:
                 break;
         }
@@ -332,77 +257,18 @@ const Canvas = () => {
             ctx.stroke();
             setPath((prevPath) => [...prevPath, { x, y }]);
         }
-
-
         if (selectedOption === "move" && selectedFigure) {
-
-
-
             const updatedFigure = {
                 ...selectedFigure,
                 coordX: selectedFigure.coordX + deltaX,
                 coordY: selectedFigure.coordY + deltaY
             };
-
             dispatch(updateFigure(updatedFigure));
             setSelectedFigure(updatedFigure);
             setLastMouseX(mouseX);
             setLastMouseY(mouseY);
         }
-
-
     };
-
-
-    function drawRoundedTriangle(
-        ctx: CanvasRenderingContext2D,
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-        borderRadius: number,
-        color: string
-    ) {
-        function lerp(p1: [number, number], p2: [number, number], t: number): [number, number] {
-            return [
-                p1[0] * (1 - t) + p2[0] * t,
-                p1[1] * (1 - t) + p2[1] * t
-            ];
-        }
-
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.beginPath();
-
-        const p1: [number, number] = [width / 2, 0];
-        const p2: [number, number] = [0, height];
-        const p3: [number, number] = [width, height];
-
-
-        const radius = Math.min(borderRadius, width / 4, height / 4);
-
-
-        const q1 = lerp(p1, p2, radius / width);
-        const q2 = lerp(p1, p3, radius / width);
-        const q3 = lerp(p2, p3, radius / height);
-
-
-        ctx.moveTo(q1[0], q1[1]);
-        ctx.quadraticCurveTo(p1[0], p1[1], q2[0], q2[1])
-
-        ctx.lineTo(p3[0], p3[1]);
-        ctx.quadraticCurveTo(p3[0], p3[1], q3[0], q3[1]);
-
-        ctx.lineTo(q1[0], q1[1]);
-        ctx.quadraticCurveTo(p2[0], p2[1], q1[0], q1[1]);
-
-        ctx.closePath();
-        ctx.fillStyle = color;
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
-    }
-
     useEffect(() => {
         const ctx = ctxRef.current;
         if (ctx) {
@@ -478,14 +344,7 @@ const Canvas = () => {
         }
     }, [arrayOfFigures, arrayOfLines, offsetX, offsetY, selectedFigure]);
 
-    const handleTextSubmit = () => {
-        if (text.trim() && textPosition) {
-
-            setText("");
-            setTextPosition(null);
-        }
-    };
-
+    
     useEffect(() => {
         if (selectedFigure) {
 
@@ -503,26 +362,16 @@ const Canvas = () => {
         }
     }, [arrayOfFigures]);
 
-
-
-
-
-    const drawFrame = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
-        const { leftX, topY, width, height } = calculateBounds(startX, startY, x, y);
-
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.fillStyle = "white";
-        ctx.fillRect(leftX, topY, width, height);
-        ctx.strokeStyle = "black";
-        ctx.strokeRect(leftX, topY, width, height);
-
-        ctx.fillStyle = "black";
-        ctx.font = "16px Arial";
-        ctx.fillText("Frame 1", leftX + 5, topY - 5);
-    };
-
+ 
 
    
+        const handleTextSubmit = () => {
+            if (text.trim() && textPosition) {
+    
+                setText("");
+                setTextPosition(null);
+            }
+        };
     return (
         <div className={styles.wrapper}>
             <canvas
