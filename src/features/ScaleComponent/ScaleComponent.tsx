@@ -19,9 +19,9 @@ dispatch(setScale(Number(e.target.value)))
     return (
         <div className={styles.scale}>
             <ScaleInput
-                defaultValue={100}
+                defaultValue={1}
                 handler={handleChange}
-                placeholder="100%"
+                placeholder="1"
             />
             <ScaleButton
                 handler={handleDecrement}

@@ -11,7 +11,7 @@ interface ScaleReducerTypes {
     scale: number
 }
 const initialState: ScaleReducerTypes = {
-    scale: 100
+    scale: 1
 };
 const ScaleSlice = createSlice({
     name: 'size',
