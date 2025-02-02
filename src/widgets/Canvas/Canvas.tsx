@@ -16,13 +16,16 @@ import { drawCircle } from "@/helpers/DrawCircle";
 import { drawTriangle } from "@/helpers/DrawTriangle";
 import { drawFrame } from "@/helpers/DrawFrame";
 import { setCloseLayout } from "@/pages/store/Reducers/LayoutReducer";
+import { setCanvasElements } from "@/services/canvas";
 
 interface Point {
     x: number;
     y: number;
 }
-
-const Canvas = () => {
+interface CanvasProps {
+    id: string
+}
+const Canvas = ({id}: CanvasProps) => {
     const dispatch = useDispatch();
     const arrayOfFigures = useSelector(CanvasArrayOfFiguresSelector);
     const arrayOfLines = useSelector(CanvasArrayOfLinesSelector);
@@ -276,77 +279,7 @@ if(selectedOption!="move") {
             setLastMouseY(mouseY);
         }
     };
-/* 
-    useEffect(() => {
-        const ctx = ctxRef.current;
-        if (ctx) {
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            ctx.save();
-            ctx.translate(offsetX, offsetY);
-            arrayOfFigures.forEach(figure => {
-                ctx.beginPath();
-                ctx.globalAlpha = figure.opacity;
-
-                ctx.shadowColor = figure.shadowColor;
-                ctx.shadowOffsetX = figure.shadowX;
-                ctx.shadowOffsetY = figure.shadowY;
-                ctx.lineWidth = figure.stroke;
-                ctx.strokeStyle = figure.strokeColor;
-                ctx.fillStyle = figure.background || "#fff";
-                if (figure.type === "square") {
-                    ctx.roundRect(
-                        figure.coordX,
-                        figure.coordY,
-                        figure.width * scale,  
-                        figure.height * scale,  
-                        figure.border
-                    );
-                } else if (figure.type === "round") {
-                    const radius = Math.max(figure.width, figure.height) / 2;
-                    ctx.arc(
-                        figure.coordX + figure.width * scale / 2,
-                        figure.coordY + figure.height * scale / 2,
-                        radius * scale,   
-                        0,
-                        2 * Math.PI
-                    );
-                } else if (figure.type === "triangle") {
-                    const base = figure.width * scale;  
-                    const height = figure.height * scale;  
-                    ctx.moveTo(figure.coordX + base / 2, figure.coordY);
-                    ctx.lineTo(figure.coordX, figure.coordY + height);
-                    ctx.lineTo(figure.coordX + base, figure.coordY + height);
-                    ctx.closePath();
-                }
-                else if (figure.type === "frame") {
-                    ctx.fillStyle = "white";
-                    ctx.fillRect(figure.coordX, figure.coordY, figure.width * scale, figure.height * scale);  
-                    ctx.strokeStyle = "black";
-                    ctx.strokeRect(figure.coordX, figure.coordY, figure.width * scale, figure.height * scale);  
-                    ctx.fillStyle = "black";
-                    ctx.font = "16px Arial";
-                    ctx.fillText("Frame 1", figure.coordX + 5, figure.coordY - 5);
-                }
-                ctx.fill();
-                ctx.stroke();
-            });
-
-            arrayOfLines.forEach(line => {
-                ctx.beginPath();
-                ctx.strokeStyle = line.color;
-                ctx.lineWidth = line.strokeWidth;
-                line.path.forEach((point, index) => {
-                    if (index === 0) {
-                        ctx.moveTo(point.x, point.y);
-                    } else {
-                        ctx.lineTo(point.x, point.y);
-                    }
-                });
-                ctx.stroke();
-            });
-            ctx.restore();
-        }
-    }, [arrayOfFigures, arrayOfLines, offsetX, offsetY, selectedFigure]); */
+ 
 
     useEffect(() => {
         const ctx = ctxRef.current;
@@ -355,21 +288,18 @@ if(selectedOption!="move") {
             ctx.save();
             ctx.translate(offsetX, offsetY);
     
-            // Сортируем фигуры по layout перед отрисовкой
-            const sortedFigures = [...arrayOfFigures].sort((a, b) => a.layout - b.layout);
+             const sortedFigures = [...arrayOfFigures].sort((a, b) => a.layout - b.layout);
             const sortedLines = [...arrayOfLines].sort((a, b) => a.layout - b.layout);
     
             sortedFigures.forEach(figure => {
                 ctx.beginPath();
                 ctx.globalAlpha = figure.opacity;
-    
                 ctx.shadowColor = figure.shadowColor;
                 ctx.shadowOffsetX = figure.shadowX;
                 ctx.shadowOffsetY = figure.shadowY;
                 ctx.lineWidth = figure.stroke;
                 ctx.strokeStyle = figure.strokeColor;
                 ctx.fillStyle = figure.background || "#fff";
-    
                 if (figure.type === "square") {
                     ctx.roundRect(
                         figure.coordX,
@@ -423,6 +353,10 @@ if(selectedOption!="move") {
             });
     
             ctx.restore();
+
+setCanvasElements(arrayOfFigures, arrayOfLines, id)
+
+
         }
     }, [arrayOfFigures, arrayOfLines, offsetX, offsetY, selectedFigure]);
     
@@ -497,3 +431,5 @@ if(selectedOption!="move") {
 };
 
 export default Canvas;
+
+ 

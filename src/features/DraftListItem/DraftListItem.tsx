@@ -13,7 +13,7 @@ interface DraftListItemProps {
 const DraftListItem = ({ item }: DraftListItemProps) => {
     const router = useRouter()
     const handleNavigate = () => {
-        router.push(`/CanvasPage`)
+        router.push(`/CanvasPage/${item.ID}`)
     }
     return (<div className={styles.item}
         onClick={handleNavigate}
