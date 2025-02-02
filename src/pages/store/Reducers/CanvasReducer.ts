@@ -68,12 +68,54 @@ const CanvasSlice = createSlice({
 
     setOpenLayotPanel(state) {
       state.isOpenLayoutPanel = !state.isOpenLayoutPanel
+    },
+
+
+
+
+    setChangeLayout(
+      state,
+      action: PayloadAction<{ id: number; newLayout: number }>
+    ) {
+      const { id, newLayout } = action.payload;
+     
+      const itemToMove =
+        state.arrayOfFigures.find((fig) => fig.id === id) ||
+        state.arrayOfLines.find((line) => line.id === id);
+    
+      if (!itemToMove) return;
+    
+      const oldLayout = itemToMove.layout;
+      itemToMove.layout = newLayout;
+    
+    
+      const allItems = [...state.arrayOfFigures, ...state.arrayOfLines];
+    
+      allItems.forEach((item) => {
+        if (item.id !== id) {
+          
+          if (oldLayout < newLayout && item.layout > oldLayout && item.layout <= newLayout) {
+            item.layout -= 1;
+          }
+         
+          else if (oldLayout > newLayout && item.layout >= newLayout && item.layout < oldLayout) {
+            item.layout += 1;
+          }
+        }
+      });
+     
+      state.arrayOfFigures = allItems.filter((item) => "width" in item) as FigureObject[];
+      state.arrayOfLines = allItems.filter((item) => "length" in item) as LineObject[];
     }
+    
+
+
   },
 });
 
 export const { selectOption, addFigure, setOpenMenuToolbarList, setOpenLayotPanel, addLine, updateFigure,
-addFrame
+addFrame,
+setChangeLayout
 
  } = CanvasSlice.actions;
 export default CanvasSlice.reducer;
