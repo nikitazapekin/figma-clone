@@ -30,10 +30,8 @@ console.log("field", field, ":", value)
     } as FigureObject;
 
     console.log("updatedElement:", updatedElement);
- 
     if (["round", "square", "triangle"].includes(selectedElement.type)) {
         if (updateFigure) {
-       
             dispatch(updateFigure(updatedElement));
         }  
     }

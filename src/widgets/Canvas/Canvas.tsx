@@ -15,6 +15,7 @@ import { drawSquare } from "@/helpers/DrawSquare";
 import { drawCircle } from "@/helpers/DrawCircle";
 import { drawTriangle } from "@/helpers/DrawTriangle";
 import { drawFrame } from "@/helpers/DrawFrame";
+import { setCloseLayout } from "@/pages/store/Reducers/LayoutReducer";
 
 interface Point {
     x: number;
@@ -45,7 +46,7 @@ const Canvas = () => {
     const [selectedFigure, setSelectedFigure] = useState<any>(null);
 
     const { isSelected, element } = useSelector(isSelectedElementSelector);
-    const scale = useSelector(ScaleSelector);  // Scaling factor
+    const scale = useSelector(ScaleSelector);   
 
     const updateCanvasSize = () => {
         const canvas = canvasRef.current;
@@ -147,15 +148,16 @@ const Canvas = () => {
         const mouseY = e.clientY - rect.top;
 
         const { leftX, topY, width, height } = calculateBounds(startX, startY, mouseX, mouseY);
+if(selectedOption!="move") {
 
-        dispatch(
-            addFigure({
+    dispatch(
+        addFigure({
                 id: arrayOfFigures.length + 1,
                 coordX: leftX,
                 coordY: topY,
                 type: selectedOption,
-                width: width * scale,  // Apply scaling factor
-                height: height * scale,  // Apply scaling factor
+                width: width * scale,  
+                height: height * scale,  
                 border: 0,
                 opacity: 1,
                 stroke: 0,
@@ -163,9 +165,11 @@ const Canvas = () => {
                 shadowColor: "#000",
                 shadowX: 0,
                 shadowY: 0,
-                background: "#fff"
+                background: "#fff",
+                layout: Math.max(arrayOfFigures.length, arrayOfLines.length)+1
             })
         );
+    }
         if (selectedOption === "pencil" && path.length > 1) {
             const minX = Math.min(...path.map(p => p.x));
             const minY = Math.min(...path.map(p => p.y));
@@ -177,12 +181,13 @@ const Canvas = () => {
                     coordX: minX,
                     coordY: minY,
                     type: "pencil",
-                    width: (maxX - minX) * scale,  // Apply scaling factor
-                    height: (maxY - minY) * scale,  // Apply scaling factor
+                    width: (maxX - minX) * scale,  
+                    height: (maxY - minY) * scale,  
                     path,
 
                     strokeWidth: 2,
                     color: "black",
+                    layout: Math.max(arrayOfFigures.length, arrayOfLines.length)+1
                 })
             );
         }
@@ -192,10 +197,11 @@ const Canvas = () => {
                     id: arrayOfFigures.length + 1,
                     coordX: leftX,
                     coordY: topY,
-                    width: width * scale,  // Apply scaling factor
-                    height: height * scale,  // Apply scaling factor
+                    width: width * scale, 
+                    height: height * scale,   
                     type: "frame",
-                    background: "#fff"
+                    background: "#fff",
+                    layout: Math.max(arrayOfFigures.length, arrayOfLines.length)+1
                 })
             );
         }
@@ -291,8 +297,8 @@ const Canvas = () => {
                     ctx.roundRect(
                         figure.coordX,
                         figure.coordY,
-                        figure.width * scale,  // Apply scaling factor
-                        figure.height * scale,  // Apply scaling factor
+                        figure.width * scale,  
+                        figure.height * scale,  
                         figure.border
                     );
                 } else if (figure.type === "round") {
@@ -300,13 +306,13 @@ const Canvas = () => {
                     ctx.arc(
                         figure.coordX + figure.width * scale / 2,
                         figure.coordY + figure.height * scale / 2,
-                        radius * scale,  // Apply scaling factor
+                        radius * scale,   
                         0,
                         2 * Math.PI
                     );
                 } else if (figure.type === "triangle") {
-                    const base = figure.width * scale;  // Apply scaling factor
-                    const height = figure.height * scale;  // Apply scaling factor
+                    const base = figure.width * scale;  
+                    const height = figure.height * scale;  
                     ctx.moveTo(figure.coordX + base / 2, figure.coordY);
                     ctx.lineTo(figure.coordX, figure.coordY + height);
                     ctx.lineTo(figure.coordX + base, figure.coordY + height);
@@ -314,9 +320,9 @@ const Canvas = () => {
                 }
                 else if (figure.type === "frame") {
                     ctx.fillStyle = "white";
-                    ctx.fillRect(figure.coordX, figure.coordY, figure.width * scale, figure.height * scale);  // Apply scaling factor
+                    ctx.fillRect(figure.coordX, figure.coordY, figure.width * scale, figure.height * scale);  
                     ctx.strokeStyle = "black";
-                    ctx.strokeRect(figure.coordX, figure.coordY, figure.width * scale, figure.height * scale);  // Apply scaling factor
+                    ctx.strokeRect(figure.coordX, figure.coordY, figure.width * scale, figure.height * scale);  
                     ctx.fillStyle = "black";
                     ctx.font = "16px Arial";
                     ctx.fillText("Frame 1", figure.coordX + 5, figure.coordY - 5);
@@ -345,6 +351,7 @@ const Canvas = () => {
     useEffect(() => {
         if (selectedFigure) {
             dispatch(setSelectedElement(selectedFigure));
+            dispatch(setCloseLayout())
         }
     }, [selectedFigure]);
 
@@ -366,13 +373,12 @@ const Canvas = () => {
     useEffect(() => {
         const updatedFigures = arrayOfFigures.map(figure => ({
             ...figure,
-            coordX: figure.coordX * scale,  // Пересчитываем координаты
-            coordY: figure.coordY * scale,  // Пересчитываем координаты
-            width: figure.width * scale,    // Масштабируем ширину
-            height: figure.height * scale,  // Масштабируем высоту
+            coordX: figure.coordX * scale, 
+            coordY: figure.coordY * scale,  
+            width: figure.width * scale,    
+            height: figure.height * scale, 
         }));
-    
-        // Обновляем фигуры с новым масштабом
+     
         updatedFigures.forEach((updatedFigure) => {
             dispatch(updateFigure(updatedFigure));
         });

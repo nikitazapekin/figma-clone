@@ -17,7 +17,8 @@ export interface FigureObject {
     strokeColor: string,
     shadowColor: string, 
     shadowX: number, 
-    shadowY: number
+    shadowY: number,
+    layout: number
   }
   
   interface Point {
@@ -38,6 +39,7 @@ export interface FigureObject {
     path: Point[],
     strokeWidth: number,
     color: string,
+    layout: number
   }
   
   
@@ -49,7 +51,8 @@ export interface FigureObject {
     type: string,
     width: number,
     height: number,
-    background: string
+    background: string,
+    layout: number
   }
   
   

@@ -3,15 +3,17 @@ import styles from "./SidebarButton.module.scss"
 import Menu from "@/assets/icons/menu.png"
 import { useDispatch } from "react-redux"
 import { setOpenLayotPanel } from "@/pages/store/Reducers/CanvasReducer";
-
-const SidebarButton = () => {
-    const dispatch = useDispatch()
-    const handleOpen = () => {
+interface SidebarButtonProps {
+    handler: ()=> void
+}
+const SidebarButton = ({handler}: SidebarButtonProps) => {
+    
+  /*   const handleOpen = () => {
         dispatch(setOpenLayotPanel())
-    }
+    } */
     return (
         <div className={styles.button}
-            onClick={handleOpen}
+            onClick={handler}
         >
             <Image
                 className={styles.button__image}

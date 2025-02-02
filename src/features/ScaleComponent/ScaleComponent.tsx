@@ -8,10 +8,10 @@ const ScaleComponent = () => {
     const dispatch = useDispatch()
     const scale = useSelector(ScaleSelector)
     const handleIncrement = () => {
-        dispatch(setScale(scale + 10))
+        dispatch(setScale(scale + 0.1))
     }
     const handleDecrement = () => {
-        dispatch(setScale(scale - 10))
+        dispatch(setScale(scale - 0.1))
     }
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 dispatch(setScale(Number(e.target.value)))

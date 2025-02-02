@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import styles from "./StyleToolsItem.module.scss";
 import { setNewStyle } from "@/pages/store/Thunk/SetNewStyle";
@@ -10,8 +9,8 @@ interface NestedItem {
     title: string;
     value: string;
     placeholder: string;
-    type: String[]
-    field: string
+    type: String[];
+    field: string;
 }
 
 interface StyleToolsItemProps {
@@ -20,21 +19,58 @@ interface StyleToolsItemProps {
         title: string;
         value: string;
         placeholder: string;
-        type: String[]
+        type: String[];
         nested?: NestedItem[];
-        field: string
-    },
-    type: string
+        field: string;
+    };
+    type: string;
 }
 
 const StyleToolsItem = ({ item, type }: StyleToolsItemProps) => {
     const [isOpen, setIsOpen] = useState(false);
-    const dispatch = useDispatch<AppDispatch>()
+    const dispatch = useDispatch<AppDispatch>();
+
+  
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-       
-        dispatch(setNewStyle({ field: e.target.name , value: e.target.value }))
-       
-    }
+        dispatch(setNewStyle({ field: e.target.name, value: e.target.value }));
+    };
+
+     
+    const renderInput = (field: string) => {
+        switch (field) {
+            case 'background':
+            case 'strokeColor':
+            case 'shadowColor':
+                return (
+                    <input
+                        type="color"
+                        className={styles.item__input}
+                        onChange={(e) => handleChange(e)}
+                        name={field}
+                    />
+                );
+            case 'image':
+                return (
+                    <input
+                        type="file"
+                        accept="image/*"
+                        className={styles.item__input}
+                        onChange={(e) => handleChange(e)}
+                        name={field}
+                    />
+                );
+            default:
+                return (
+                    <input
+                        placeholder="Enter value"
+                        className={styles.item__input}
+                        onChange={(e) => handleChange(e)}
+                        name={field}
+                    />
+                );
+        }
+    };
+
     return (
         <>
             {item.type.includes(type) && (
@@ -42,10 +78,7 @@ const StyleToolsItem = ({ item, type }: StyleToolsItemProps) => {
                     {!item.nested ? (
                         <div className={styles.singleItem}>
                             <h3 className={styles.item__title}>{item.title}</h3>
-                            <input placeholder={item.placeholder} className={styles.item__input}
-                                onChange={(e) => handleChange(e)}
-                                name={item.field}
-                            />
+                            {renderInput(item.field)}
                         </div>
                     ) : (
                         <details
@@ -60,24 +93,16 @@ const StyleToolsItem = ({ item, type }: StyleToolsItemProps) => {
                             {item.nested.map((nested) => (
                                 <div key={nested.id} className={styles.nestedItem}>
                                     <h3 className={styles.item__title}>{nested.title}</h3>
-                                    <input
-                                        placeholder={nested.placeholder}
-                                        className={styles.item__input}
-                                        onChange={(e) => handleChange(e)}
-                                        name={nested.field}
-                                    />
-
-
-                                    {nested.field}
+                                    {renderInput(nested.field)}
                                 </div>
                             ))}
                         </details>
                     )}
                 </div>
-            )
-            }
+            )}
         </>
     );
 };
 
 export default StyleToolsItem;
+ 

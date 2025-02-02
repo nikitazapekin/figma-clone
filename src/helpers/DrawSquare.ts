@@ -43,16 +43,9 @@ export const drawSquare = (
 ) => {
     const { leftX, topY, width, height } = calculateBounds(startX, startY, x, y);
     const size = isShiftPressed ? Math.min(width, height) : width;
-
-    // Масштабируем размер
     const scaledSize = size * scale;
-
-    // Масштабируем позицию относительно исходных координат
     const scaledLeftX = leftX * scale;
     const scaledTopY = topY * scale;
-
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-    // Рисуем квадрат с новыми размерами и координатами
     ctx.strokeRect(scaledLeftX, scaledTopY, scaledSize, scaledSize);
 };

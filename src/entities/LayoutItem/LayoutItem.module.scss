@@ -1,0 +1,8 @@
+@use "../../app/theme/theme.scss" as *;
+
+.item {
+    padding: 10px;
+    &__title {
+        @include fontSize(20px)
+    }
+}
